@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:nearex/confirmdone.dart';
-import 'package:nearex/createpass.dart';
-import 'package:nearex/main-screen.dart';
-import 'package:nearex/otpconfirm.dart';
+import 'package:nearex/guest/app_intro.dart';
 
 void main() {
   runApp(
-    MaterialApp(
+    const MaterialApp(
       home: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 87, 0, 63),
+        // backgroundColor: const Color.fromARGB(255, 87, 0, 63),
         body: Center(
-          child: CreatePassword(),
+          child: AppIntro(),
         ),
       ),
     ),

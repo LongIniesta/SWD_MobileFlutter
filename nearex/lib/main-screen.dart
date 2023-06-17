@@ -6,7 +6,8 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Scaffold(
+        body: Center(
       child: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -48,7 +49,6 @@ class MainScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           fontSize: 30),
                       textAlign: TextAlign.center,
-
                     ),
                     const SizedBox(
                       height: 5,
@@ -77,7 +77,7 @@ class MainScreen extends StatelessWidget {
                         keyboardType: TextInputType.phone,
                         onInputChanged: (value) {},
                         cursorColor: Colors.black,
-                        inputDecoration: const InputDecoration( 
+                        inputDecoration: const InputDecoration(
                           border: InputBorder.none,
                           hintText: 'So dien thoai cua ban',
                         ),
@@ -96,7 +96,8 @@ class MainScreen extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                             foregroundColor:
                                 const Color.fromARGB(255, 255, 255, 255),
-                            backgroundColor: const Color.fromARGB(255, 75, 121, 227),
+                            backgroundColor:
+                                const Color.fromARGB(255, 75, 121, 227),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(40))),
                         child: const Text('Tiếp tục'),
@@ -120,11 +121,12 @@ class MainScreen extends StatelessWidget {
                           fontWeight: FontWeight.w200,
                           fontSize: 15),
                       textAlign: TextAlign.center,
-
                     ),
-                    const SizedBox(height: 20,),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     InkWell(
-                      onTap: (){},
+                      onTap: () {},
                       child: Container(
                         width: 50,
                         height: 50,
@@ -137,17 +139,21 @@ class MainScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20,)
-                    ,
+                    const SizedBox(
+                      height: 20,
+                    ),
                     InkWell(
-                      onTap: (){},
-                      child: Text('Bạn muốn đăng kí tài khoản cho cửa hàng?', style: TextStyle(decoration: TextDecoration.underline),),
+                      onTap: () {},
+                      child: Text(
+                        'Bạn muốn đăng kí tài khoản cho cửa hàng?',
+                        style: TextStyle(decoration: TextDecoration.underline),
+                      ),
                     )
                   ],
                 )),
           ],
         ),
       ),
-    );
+    ));
   }
 }
