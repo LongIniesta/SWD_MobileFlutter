@@ -13,6 +13,8 @@ class AdvantageIntroduction extends StatefulWidget {
 }
 
 class _AdvantageIntroductionState extends State<AdvantageIntroduction> {
+  double _screenWidth = 0;
+  double _screenHeight = 0;
   double itemWidth = 400;
   ScrollController scrollController = ScrollController();
   List<_Item> items = [
@@ -35,67 +37,86 @@ class _AdvantageIntroductionState extends State<AdvantageIntroduction> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    _screenWidth = DimensionValue.getScreenWidth(context);
+    _screenHeight = DimensionValue.getScreenHeight(context);
+    return Scaffold(
+        body: Container(
       decoration:
           const BoxDecoration(gradient: ColorBackground.lightBlueGradient),
-      child: Column(children: [
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         SizedBox(
-          height: 400,
+          height: _screenHeight * 0.7,
           child: ListView.separated(
               controller: scrollController,
               scrollDirection: Axis.horizontal,
               itemCount: items.length,
               itemBuilder: (context, index) =>
                   buildItemView(item: items[index]),
-              // VisibilityDetector(
-              //   key: Key(index.toString()),
-              //   onVisibilityChanged: (VisibilityInfo info) {
-              //     if (info.visibleFraction == 1) {
-              //       setState(() {
-              //         _currentItem = index;
-              //       });
-              //     }
-              //   },
-              //   child: buildItemView(item: items[index]),
-              // ),
               separatorBuilder: (context, _) => const SizedBox(width: 12)),
         ),
         Center(
-          child: Column(children: [
-            Text(
-              'View More',
-              style: GoogleFonts.dosis(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: const Color.fromARGB(255, 137, 163, 226)),
-            ),
-            Container(
-              // margin: EdgeInsets.all(100.0),
-              decoration: const BoxDecoration(
-                  gradient: ColorBackground.blueGradient,
-                  shape: BoxShape.circle),
-              child: IconButton(
-                  onPressed: _onPressed,
-                  icon: const Icon(Icons.arrow_forward_ios_rounded),
-                  color: Colors.blueAccent),
-            ),
-          ]),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              // mainAxisSize: MainAxisSize.max,
+              children: [
+                Text(
+                  'View More',
+                  style: GoogleFonts.dosis(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 137, 163, 226)),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  // margin: EdgeInsets.all(100.0),
+                  decoration: const BoxDecoration(
+                      gradient: ColorBackground.blueGradient,
+                      shape: BoxShape.circle),
+                  child: IconButton(
+                      onPressed: _onPressed,
+                      icon: const Icon(Icons.arrow_forward_ios_rounded),
+                      color: Colors.white),
+                ),
+              ]),
         )
       ]),
-    );
+    ));
   }
 
   Widget buildItemView({required _Item item}) {
     return SizedBox(
-      width: itemWidth,
-      child: Column(children: [
-        Image.asset(
-          item.imageUrl,
-          fit: BoxFit.cover,
-        ),
-        Text(item.title),
-        Text(item.text)
-      ]),
+      width: _screenWidth,
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Image.asset(
+              item.imageUrl,
+              fit: BoxFit.cover,
+            ),
+            Text(
+              item.title,
+              style: GoogleFonts.inter(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(255, 66, 109, 212)),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            SizedBox(
+                width: _screenWidth * 0.7,
+                child: Text(
+                  item.text,
+                  style: GoogleFonts.sourceSansPro(
+                      fontSize: 17,
+                      color: const Color.fromARGB(255, 92, 90, 120)),
+                  textAlign: TextAlign.center,
+                ))
+          ]),
     );
   }
 

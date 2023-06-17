@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nearex/guest/app_intro.dart';
+import 'package:nearex/guest/advantage_introduction.dart';
 
 void main() {
   runApp(
@@ -7,7 +7,7 @@ void main() {
       home: Scaffold(
         // backgroundColor: const Color.fromARGB(255, 87, 0, 63),
         body: Center(
-          child: AppIntro(),
+          child: AdvantageIntroduction(),
         ),
       ),
     ),
