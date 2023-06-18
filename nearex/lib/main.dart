@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:nearex/guest/app_intro.dart';
 import 'package:nearex/confirmdone.dart';
 import 'package:nearex/createpass.dart';
 import 'package:nearex/main-screen.dart';
@@ -11,11 +12,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(
-    MaterialApp(
+    const MaterialApp(
       home: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 87, 0, 63),
+        // backgroundColor: const Color.fromARGB(255, 87, 0, 63),
         body: Center(
-          child: MainScreen(),
+          child: CreatePassword(),
         ),
       ),
     ),

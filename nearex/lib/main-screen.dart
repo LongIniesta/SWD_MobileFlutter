@@ -8,7 +8,8 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Scaffold(
+        body: Center(
       child: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -156,7 +157,7 @@ class MainScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 }
 
