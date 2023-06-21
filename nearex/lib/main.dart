@@ -1,26 +1,21 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:nearex/guest/app_intro.dart';
-import 'package:nearex/guest/createaccount.dart';
-import 'package:nearex/guest/main-screen.dart';
-import 'package:nearex/guest/passwordtologin.dart';
+import 'guest/app_intro.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  // runApp(
-  //   const MaterialApp(
-  //     home: Scaffold(
-  //       backgroundColor: const Color.fromARGB(255, 87, 0, 63),
-  //       body: Center(
-  //         child: AppStart(),
-  //       ),
-  //     ),
-  //   ),
-  // );
   runApp(
-    const MaterialApp(home: MainScreen(),)
-   );
+    const MaterialApp(
+      home: Scaffold(
+        backgroundColor: const Color.fromARGB(255, 87, 0, 63),
+        body: Center(
+          child: AppStart(),
+        ),
+      ),
+    ),
+  );
 }
 
 

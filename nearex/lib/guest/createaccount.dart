@@ -1,13 +1,17 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
+import 'package:nearex/place/mapscreen.dart';
 
 class CreateAccount extends StatefulWidget {
   CreateAccount(
@@ -40,6 +44,9 @@ class CreateAccountState extends State<CreateAccount> {
   String gender = 'Nam';
   String address = '';
   String email = '';
+  double? longtitude;
+  double? latitude;
+  bool isAddressValid = false;
   DateTime dob = DateTime.now();
 
   bool enableEmail = true;
@@ -131,247 +138,307 @@ class CreateAccountState extends State<CreateAccount> {
                     ),
                   ),
                 ),
-              Container(
-                margin: EdgeInsets.only(left: 40, top: 10),
-                child: const Text(
-                  'Họ và tên',
-                  style: TextStyle(
-                      color: Color.fromARGB(255, 58, 58, 58),
-                      fontWeight: FontWeight.w400,
-                      fontSize: 17),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  //height: 60,
-                  margin: EdgeInsets.only(top: 5),
-                  padding: EdgeInsets.only(left: 20),
-                  width: 370,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 196, 196, 196),
-                        width: 1.5,
+              SizedBox(
+                height: 550,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 40, top: 10),
+                        child: const Text(
+                          'Họ và tên',
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 58, 58, 58),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 17),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: TextField(
-                    keyboardType: TextInputType.text,
-                    cursorColor: Colors.black,
-                    decoration: const InputDecoration(
-                      hintText: 'Họ và tên',
-                      border: InputBorder.none,
-                    ),
-                    onChanged: (value) {
-                      name = value;
-                    },
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 40, top: 10),
-                child: const Text(
-                  'Ngày sinh',
-                  style: TextStyle(
-                      color: Color.fromARGB(255, 58, 58, 58),
-                      fontWeight: FontWeight.w400,
-                      fontSize: 17),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  width: 370,
-                  margin: EdgeInsets.only(top: 5),
-                  padding: EdgeInsets.only(left: 20),
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 196, 196, 196),
-                        width: 1.5,
+                      Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          //height: 60,
+                          margin: EdgeInsets.only(top: 5),
+                          padding: EdgeInsets.only(left: 20),
+                          width: 370,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: const Color.fromARGB(255, 196, 196, 196),
+                                width: 1.5,
+                              ),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: TextField(
+                            keyboardType: TextInputType.text,
+                            cursorColor: Colors.black,
+                            decoration: const InputDecoration(
+                              hintText: 'Họ và tên',
+                              border: InputBorder.none,
+                            ),
+                            onChanged: (value) {
+                              name = value;
+                            },
+                          ),
+                        ),
                       ),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: InkWell(
-                    onTap: () {
-                      _showDatePicker();
-                      print(name + '-' + dob.toString());
-                    },
-                    child: TextField(
-                      enabled: false,
-                      keyboardType: TextInputType.phone,
-                      cursorColor: Colors.black,
-                      decoration: InputDecoration(
-                        hintText: '${dob.day}/${dob.month}/${dob.year}',
-                        border: InputBorder.none,
+                      Container(
+                        margin: EdgeInsets.only(left: 40, top: 10),
+                        child: const Text(
+                          'Ngày sinh',
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 58, 58, 58),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 17),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 40, top: 10),
-                child: const Text(
-                  'Giới tính',
-                  style: TextStyle(
-                      color: Color.fromARGB(255, 58, 58, 58),
-                      fontWeight: FontWeight.w400,
-                      fontSize: 17),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  //height: 60,
-                  margin: EdgeInsets.only(top: 5),
-                  padding: EdgeInsets.only(left: 20),
-                  width: 370,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 196, 196, 196),
-                        width: 1.5,
+                      Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          width: 370,
+                          margin: EdgeInsets.only(top: 5),
+                          padding: EdgeInsets.only(left: 20),
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: const Color.fromARGB(255, 196, 196, 196),
+                                width: 1.5,
+                              ),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: InkWell(
+                            onTap: () {
+                              _showDatePicker();
+                              print(name + '-' + dob.toString());
+                            },
+                            child: TextField(
+                              enabled: false,
+                              keyboardType: TextInputType.phone,
+                              cursorColor: Colors.black,
+                              decoration: InputDecoration(
+                                hintText: '${dob.day}/${dob.month}/${dob.year}',
+                                border: InputBorder.none,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: DropdownButton<String>(
-                    underline: Container(
-                      height: 0,
-                    ),
-                    value: gender,
-                    style: TextStyle(color: Colors.black),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        gender = newValue!;
-                      });
-                    },
-                    items: const [
-                      DropdownMenuItem<String>(
-                        value: 'Nam',
-                        child: Text('Nam'),
+                      Container(
+                        margin: EdgeInsets.only(left: 40, top: 10),
+                        child: const Text(
+                          'Giới tính',
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 58, 58, 58),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 17),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                      DropdownMenuItem<String>(
-                        value: 'Nữ',
-                        child: Text('Nữ'),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          //height: 60,
+                          margin: EdgeInsets.only(top: 5),
+                          padding: EdgeInsets.only(left: 20),
+                          width: 370,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: const Color.fromARGB(255, 196, 196, 196),
+                                width: 1.5,
+                              ),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: DropdownButton<String>(
+                            underline: Container(
+                              height: 0,
+                            ),
+                            value: gender,
+                            style: TextStyle(color: Colors.black),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                gender = newValue!;
+                              });
+                            },
+                            items: const [
+                              DropdownMenuItem<String>(
+                                value: 'Nam',
+                                child: Text('Nam'),
+                              ),
+                              DropdownMenuItem<String>(
+                                value: 'Nữ',
+                                child: Text('Nữ'),
+                              ),
+                              DropdownMenuItem<String>(
+                                value: 'LGBT',
+                                child: Text('LGBT'),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      DropdownMenuItem<String>(
-                        value: 'LGBT',
-                        child: Text('LGBT'),
+                      Container(
+                        margin: EdgeInsets.only(left: 40, top: 10),
+                        child: const Text(
+                          'Địa chỉ',
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 58, 58, 58),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 17),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              //height: 60,
+                              margin: EdgeInsets.only(top: 5),
+                              padding: EdgeInsets.only(left: 20),
+                              width: 290,
+                              decoration: const BoxDecoration(
+                                  border: BorderDirectional(
+                                    bottom: BorderSide(
+                                      color: Color.fromARGB(255, 196, 196, 196),
+                                      width: 1.5,
+                                    ),
+                                    top: BorderSide(
+                                      color: Color.fromARGB(255, 196, 196, 196),
+                                      width: 1.5,
+                                    ),
+                                    start: BorderSide(
+                                      color: Color.fromARGB(255, 196, 196, 196),
+                                      width: 1.5,
+                                    ),
+                                    end: BorderSide(
+                                      color: Color.fromARGB(255, 196, 196, 196),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(10),
+                                      bottomLeft: Radius.circular(10))),
+                              child: TextField(
+                                keyboardType: TextInputType.text,
+                                cursorColor: Colors.black,
+                                decoration: const InputDecoration(
+                                  hintText: 'Địa chỉ',
+                                  border: InputBorder.none,
+                                ),
+                                onChanged: (value) {
+                                  address = value;
+                                },
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () async {
+                                await checkAddress();
+                                await showMap(longtitude!, latitude!);
+                                //List<Location> locations = await locationFromAddress('Dĩ An, Bình Dương');
+                                // print(locations.first.latitude);
+                              },
+                              child: Container(
+                                margin: EdgeInsets.only(top: 5),
+                                height: 50,
+                                width: 80,
+                                alignment: Alignment.center,
+                                decoration: const BoxDecoration(
+                                  color: Color.fromARGB(255, 127, 193, 255),
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(10),
+                                    bottomRight: Radius.circular(10),
+                                  ),
+                                ),
+                                child: Text(
+                                  'check',
+                                  style: GoogleFonts.sourceSansPro(
+                                      color: const Color.fromARGB(255, 212, 249, 255),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 40, top: 10),
+                        child: const Text(
+                          'Số điện thoại',
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 58, 58, 58),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 17),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          //height: 60,
+                          margin: EdgeInsets.only(top: 5),
+                          padding: EdgeInsets.only(left: 20),
+                          width: 370,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: const Color.fromARGB(255, 196, 196, 196),
+                                width: 1.5,
+                              ),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: TextField(
+                            controller: txtPhoneController,
+                            enabled: enabledPhone,
+                            keyboardType: TextInputType.phone,
+                            cursorColor: Colors.black,
+                            decoration: const InputDecoration(
+                              hintText: 'Số điện thoại',
+                              border: InputBorder.none,
+                            ),
+                            onChanged: (value) {
+                              phoneNumber = value;
+                            },
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 40, top: 10),
+                        child: const Text(
+                          'Email',
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 58, 58, 58),
+                              fontWeight: FontWeight.w400,
+                              fontSize: 17),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          //height: 60,
+                          margin: EdgeInsets.only(top: 5),
+                          padding: EdgeInsets.only(left: 20),
+                          width: 370,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: const Color.fromARGB(255, 196, 196, 196),
+                                width: 1.5,
+                              ),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: TextField(
+                            controller: txtEmailController,
+                            enabled: enableEmail,
+                            keyboardType: TextInputType.emailAddress,
+                            cursorColor: Colors.black,
+                            decoration: const InputDecoration(
+                              hintText: 'Email',
+                              border: InputBorder.none,
+                            ),
+                            onChanged: (value) {
+                              email = value;
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 300,)
                     ],
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 40, top: 10),
-                child: const Text(
-                  'Địa chỉ',
-                  style: TextStyle(
-                      color: Color.fromARGB(255, 58, 58, 58),
-                      fontWeight: FontWeight.w400,
-                      fontSize: 17),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  //height: 60,
-                  margin: EdgeInsets.only(top: 5),
-                  padding: EdgeInsets.only(left: 20),
-                  width: 370,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 196, 196, 196),
-                        width: 1.5,
-                      ),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: TextField(
-                    keyboardType: TextInputType.text,
-                    cursorColor: Colors.black,
-                    decoration: const InputDecoration(
-                      hintText: 'Địa chỉ',
-                      border: InputBorder.none,
-                    ),
-                    onChanged: (value) {
-                      address = value;
-                    },
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 40, top: 10),
-                child: const Text(
-                  'Số điện thoại',
-                  style: TextStyle(
-                      color: Color.fromARGB(255, 58, 58, 58),
-                      fontWeight: FontWeight.w400,
-                      fontSize: 17),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  //height: 60,
-                  margin: EdgeInsets.only(top: 5),
-                  padding: EdgeInsets.only(left: 20),
-                  width: 370,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 196, 196, 196),
-                        width: 1.5,
-                      ),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: TextField(
-                    controller: txtPhoneController,
-                    enabled: enabledPhone,
-                    keyboardType: TextInputType.phone,
-                    cursorColor: Colors.black,
-                    decoration: const InputDecoration(
-                      hintText: 'Số điện thoại',
-                      border: InputBorder.none,
-                    ),
-                    onChanged: (value) {
-                      phoneNumber = value;
-                    },
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(left: 40, top: 10),
-                child: const Text(
-                  'Email',
-                  style: TextStyle(
-                      color: Color.fromARGB(255, 58, 58, 58),
-                      fontWeight: FontWeight.w400,
-                      fontSize: 17),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: Container(
-                  //height: 60,
-                  margin: EdgeInsets.only(top: 5),
-                  padding: EdgeInsets.only(left: 20),
-                  width: 370,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 196, 196, 196),
-                        width: 1.5,
-                      ),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: TextField(
-                    controller: txtEmailController,
-                    enabled: enableEmail,
-                    keyboardType: TextInputType.emailAddress,
-                    cursorColor: Colors.black,
-                    decoration: const InputDecoration(
-                      hintText: 'Email',
-                      border: InputBorder.none,
-                    ),
-                    onChanged: (value) {
-                      email = value;
-                    },
                   ),
                 ),
               ),
@@ -393,7 +460,7 @@ class CreateAccountState extends State<CreateAccount> {
                   width: 300,
                   child: ElevatedButton(
                     onPressed: () async {
-                      createAccount();
+                      await createAccount();
                     },
                     style: ElevatedButton.styleFrom(
                         foregroundColor:
@@ -414,6 +481,7 @@ class CreateAccountState extends State<CreateAccount> {
   }
 
   Future<void> createAccount() async {
+    // await checkAddress();
     setState(() {
       error = '';
       if (name == '') {
@@ -434,7 +502,6 @@ class CreateAccountState extends State<CreateAccount> {
         if (error != '') error += ' | ';
         error += 'Số điện thoại không hợp lệ';
       }
-
       if (email == '') {
         if (error != '') error += ' | ';
         error += 'Chưa nhập email';
@@ -442,6 +509,10 @@ class CreateAccountState extends State<CreateAccount> {
       if (email != '' && !email.contains('@')) {
         if (error != '') error += ' | ';
         error += 'Email không hợp lệ';
+      }
+      if (!isAddressValid) {
+        if (error != '') error += ' | ';
+        error += 'Không xác định được địa chỉ';
       }
     });
     if (error == '') {
@@ -459,13 +530,12 @@ class CreateAccountState extends State<CreateAccount> {
       pickFile = result.files.first;
     });
   }
-  
 
   Future uploadImage() async {
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp();
     FirebaseAuth mAuth = FirebaseAuth.instance;
-    
+
     if (mAuth.currentUser != null) {
       // do your stuff
     } else {
@@ -526,6 +596,47 @@ class CreateAccountState extends State<CreateAccount> {
     } catch (e) {
       // Xử lý lỗi khi gửi request
       print('Error sending POST request: $e');
+    }
+  }
+
+  Future<void> checkAddress() async {
+    
+    try {
+      List<Location> locations = await locationFromAddress(address);
+      if (locations.isNotEmpty) {
+      Location firstLocation = locations.first;
+      setState(() {
+        isAddressValid = true;
+        longtitude = firstLocation.longitude;
+        latitude = firstLocation.latitude;
+      });
+    } else {
+      setState(() {
+        isAddressValid = false;
+      });
+    }
+    } catch (e) {
+        setState(() {
+        isAddressValid = false;
+      });
+    }
+
+    
+  }
+
+  Future<void> showMap(double longitude, double latitude) async {
+    if (isAddressValid) {
+      // ignore: use_build_context_synchronously
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  MapScreen(latitude: latitude, longitude: longitude)));
+    } else {
+      if (!error.contains('Không xác định được địa chỉ')) {
+        if (error != '') error += '|';
+        error += 'Không xác định được địa chỉ';
+      }
     }
   }
 }
