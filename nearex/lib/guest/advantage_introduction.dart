@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nearex/common/common_widget.dart';
-import 'package:nearex/main-screen.dart';
+import 'package:nearex/guest/login.dart';
+import 'package:nearex/guest/main-screen.dart';
 
 class AdvantageIntroduction extends StatefulWidget {
   const AdvantageIntroduction({super.key});
@@ -129,7 +130,7 @@ class _AdvantageIntroductionState extends State<AdvantageIntroduction> {
     } else if (index == items.length - 1) {
       // navigate to register screen
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const MainScreen()));
+          context, MaterialPageRoute(builder: (context) => const LoginScreen()));
 
       // navigate in animated way
       // Navigator.of(context).push(PageRouteBuilder(
