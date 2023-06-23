@@ -130,7 +130,7 @@ class _AdvantageIntroductionState extends State<AdvantageIntroduction> {
     } else if (index == items.length - 1) {
       // navigate to register screen
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+          context, MaterialPageRoute(builder: (context) => const MainScreen()));
 
       // navigate in animated way
       // Navigator.of(context).push(PageRouteBuilder(

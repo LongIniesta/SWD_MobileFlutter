@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:nearex/guest/createaccount.dart';
 import 'package:nearex/guest/createpass.dart';
+import 'package:nearex/guest/loginstore.dart';
 
 import 'package:nearex/guest/otpconfirm.dart';
 import 'package:nearex/guest/passwordtologin.dart';
@@ -61,10 +62,8 @@ class MainScreenState extends State<MainScreen> {
                         image: AssetImage('images/backwhitemain.png'),
                         fit: BoxFit.fill),
                   ),
-                  //alignment: Alignment.bottomCenter,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    //crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const Text(
                         'Welcome To NearEx',
@@ -92,7 +91,7 @@ class MainScreenState extends State<MainScreen> {
                         height: 60,
                         width: 370,
                         alignment: Alignment.center,
-                        padding: EdgeInsets.only(left: 10),
+                        padding: const EdgeInsets.only(left: 10),
                         decoration: BoxDecoration(
                             border: Border.all(
                               color: const Color.fromARGB(255, 196, 196, 196),
@@ -100,8 +99,8 @@ class MainScreenState extends State<MainScreen> {
                             ),
                             borderRadius: BorderRadius.circular(10)),
                         child: TextField(
-                           focusNode: _focusNode,
-                          style: TextStyle(fontSize: 18),
+                          focusNode: _focusNode,
+                          style: const TextStyle(fontSize: 18),
                           keyboardType: TextInputType.phone,
                           onChanged: (value) {
                             phoneNumber = value;
@@ -115,7 +114,8 @@ class MainScreenState extends State<MainScreen> {
                       ),
                       Text(
                         error,
-                        style: TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
+                        style: const TextStyle(
+                            color: Color.fromARGB(255, 255, 0, 0)),
                       ),
                       const SizedBox(
                         height: 30,
@@ -135,7 +135,6 @@ class MainScreenState extends State<MainScreen> {
                             } else if (phoneNumber.length != 10) {
                               setState(() {
                                 error = 'Số điện thoại không hợp lệ';
-                                
                               });
                             } else {
                               setState(() {
@@ -157,7 +156,7 @@ class MainScreenState extends State<MainScreen> {
                       const SizedBox(
                         height: 70,
                       ),
-                      if (inProcessing) CircularProgressIndicator(),
+                      if (inProcessing) const CircularProgressIndicator(),
                       const Text(
                         '-Hoặc đăng nhập bằng-',
                         style: TextStyle(
@@ -193,6 +192,21 @@ class MainScreenState extends State<MainScreen> {
                           style:
                               TextStyle(decoration: TextDecoration.underline),
                         ),
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginStore()));
+                        },
+                        child: Image.asset(
+                          'images/shop.png',
+                          color: Color.fromARGB(255, 109, 109, 109),
+                        ),
                       )
                     ],
                   )),
@@ -208,7 +222,7 @@ class MainScreenState extends State<MainScreen> {
         Uri.parse('https://swd-nearex.azurewebsites.net/api/user/verification');
     Map<String, dynamic> body = {
       "accountSID": "ACa0a4721029b596347de0283f4b3555d0",
-      "authToken": "d28be6e59ebe591b3b1df492fb79f1b9",
+      "authToken": "c4510c96630803358ffdffbf65e9687f",
       "pathServiceSid": "VAb11a77d8162e6b4df66d046680522c69",
       "phone": "$phone",
       "token": null
@@ -339,7 +353,10 @@ class MainScreenState extends State<MainScreen> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => CreateAccount(password: '', phoneNumber: null, googleUser: googleUser)));
+                  builder: (context) => CreateAccount(
+                      password: '',
+                      phoneNumber: null,
+                      googleUser: googleUser)));
         } else {
           print('Vào trang chính của account');
         }

@@ -46,6 +46,7 @@ class _AppIntroState extends State<AppIntro> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
+            width: double.maxFinite,
             decoration: const BoxDecoration(color: ColorBackground.eerieBlack),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -53,7 +54,10 @@ class _AppIntroState extends State<AppIntro> {
               children: [
                 Image.asset('images/logo_slogan.png'),
                 const Text(
-                    'Cuối tháng hết tiền? Một bữa no với chi phí cực rẻ? Tại sao không?'),
+                  'Cuối tháng hết tiền? Một bữa no với chi phí cực rẻ? Tại sao không?',
+                  style: TextStyle(color: Color.fromARGB(255, 175, 175, 175)),
+                ),
+                SizedBox(height: 10,),
                 InkWell(
                     onTap: _onTap,
                     child: Container(

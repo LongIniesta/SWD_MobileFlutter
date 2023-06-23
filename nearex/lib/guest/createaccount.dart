@@ -460,6 +460,7 @@ class CreateAccountState extends State<CreateAccount> {
                   width: 300,
                   child: ElevatedButton(
                     onPressed: () async {
+                      await checkAddress();
                       await createAccount();
                     },
                     style: ElevatedButton.styleFrom(
