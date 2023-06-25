@@ -93,6 +93,14 @@ flutter:
     - images/unknow.png
     - images/nearexpin.png
     - images/shop.png
+    - images/trangchu.png
+    - images/sanpham.png
+    - images/dothang.png
+    - images/taikhoan.png
+    - images/donhang.png
+    - images/notificationbig.png
+    - images/product.png
+    - images/uploadimg.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

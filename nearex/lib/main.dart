@@ -1,22 +1,24 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:nearex/guest/loginstore.dart';
+import 'package:nearex/store/homestore.dart';
 import 'guest/app_intro.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(
-    const MaterialApp(
-      home: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 87, 0, 63),
-        body: Center(
-          child: AppStart(),
-        ),
-      ),
-    ),
-  );
+  // runApp(
+  //   const MaterialApp(
+  //     home: Scaffold(
+  //       backgroundColor: const Color.fromARGB(255, 87, 0, 63),
+  //       body: Center(
+  //         child: AppStart(),
+  //       ),
+  //     ),
+  //   ),
+  // );
+  runApp(StoreScreen());
 
 }
 
