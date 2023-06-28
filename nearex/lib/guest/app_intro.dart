@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:nearex/common/common_widget.dart';
 import 'package:nearex/guest/advantage_introduction.dart';
+import 'package:nearex/utils/common_widget.dart';
 
 class AppStart extends StatefulWidget {
   const AppStart({super.key});
@@ -57,7 +57,9 @@ class _AppIntroState extends State<AppIntro> {
                   'Cuối tháng hết tiền? Một bữa no với chi phí cực rẻ? Tại sao không?',
                   style: TextStyle(color: Color.fromARGB(255, 175, 175, 175)),
                 ),
-                SizedBox(height: 10,),
+                SizedBox(
+                  height: 10,
+                ),
                 InkWell(
                     onTap: _onTap,
                     child: Container(

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:nearex/common/common_widget.dart';
-import 'package:nearex/guest/login.dart';
 import 'package:nearex/guest/main-screen.dart';
+import 'package:nearex/utils/common_widget.dart';
 
 class AdvantageIntroduction extends StatefulWidget {
   const AdvantageIntroduction({super.key});
@@ -16,7 +15,6 @@ class AdvantageIntroduction extends StatefulWidget {
 class _AdvantageIntroductionState extends State<AdvantageIntroduction> {
   double _screenWidth = 0;
   double _screenHeight = 0;
-  double itemWidth = 400;
   ScrollController scrollController = ScrollController();
   List<_Item> items = [
     const _Item(
@@ -122,10 +120,10 @@ class _AdvantageIntroductionState extends State<AdvantageIntroduction> {
   }
 
   void _onPressed() {
-    int index = (scrollController.offset / itemWidth).round();
+    int index = (scrollController.offset / _screenWidth).round();
     if (index >= 0 && index < items.length - 1) {
       // animate to next item on press button
-      scrollController.animateTo(itemWidth * (index + 1),
+      scrollController.animateTo(_screenWidth * (index + 1),
           duration: const Duration(seconds: 1), curve: Curves.easeInOut);
     } else if (index == items.length - 1) {
       // navigate to register screen

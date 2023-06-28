@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:nearex/model/store.dart';
+import 'package:nearex/models/store.dart';
 
 class LoginStore extends StatefulWidget {
   const LoginStore({super.key});
@@ -225,8 +225,8 @@ class LoginStoreState extends State<LoginStore> {
         );
 
         if (response.statusCode == 200) {
-         Store store = parseJson(response.body);
-         print(store.address);
+          Store store = parseJson(response.body);
+          print(store.address);
         } else {
           setState(() {
             error = 'Sai sđt hoặc mật khẩu';

@@ -15,6 +15,10 @@ class ColorBackground {
       colors: [blueberry, diamond],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight);
+  static const LinearGradient darkGradient = LinearGradient(
+      colors: [Color.fromARGB(255, 0, 0, 0), Color.fromARGB(255, 45, 44, 78)],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight);
 }
 
 class DimensionValue {
