@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:nearex/common/data_storage.dart';
 import 'package:nearex/models/customer.dart';
+import 'package:nearex/utils/data_storage.dart';
 
 class CustomerProfile extends StatefulWidget {
   const CustomerProfile({super.key});

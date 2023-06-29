@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:nearex/utils/data_storage.dart';
 import 'package:nearex/guest/createaccount.dart';
 import 'package:nearex/guest/createpass.dart';
 import 'package:nearex/guest/loginstore.dart';
@@ -290,6 +291,7 @@ class MainScreenState extends State<MainScreen> {
           if (response.body == 'false') {
             await sendOTP(phone);
           } else {
+            saveCustomerState(response.body);
             // ignore: use_build_context_synchronously
             Navigator.push(
                 context,
@@ -374,5 +376,9 @@ class MainScreenState extends State<MainScreen> {
     });
     // Once signed in, return the UserCredential
     return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
+  void saveCustomerState(String customerJson) {
+    DataStorage.storage.write(key: "customer", value: customerJson);
   }
 }

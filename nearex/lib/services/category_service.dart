@@ -14,8 +14,12 @@ class CategoryService {
     Uri uri = Uri.https(
         'swd-nearex.azurewebsites.net', '/api/categories', parameters);
     Response response = await get(uri);
-    for (var categoryJson in jsonDecode(response.body)) {
-      categories.add(Category(id: categoryJson['id'], name: 'categoryName'));
+    if (response.statusCode == 200) {
+      var categoriesJson = jsonDecode(response.body)['results'];
+      for (var categoryJson in categoriesJson) {
+        categories.add(Category(
+            id: categoryJson['id'], name: categoryJson['categoryName']));
+      }
     }
     return categories;
   }

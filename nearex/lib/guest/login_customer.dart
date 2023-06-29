@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:nearex/common/common_widget.dart';
-import 'package:nearex/common/data_storage.dart';
 import 'package:nearex/customer/customer_main.dart';
+import 'package:nearex/utils/common_widget.dart';
+import 'package:nearex/utils/data_storage.dart';
 
 class CustomerLogin extends StatefulWidget {
   const CustomerLogin({super.key});

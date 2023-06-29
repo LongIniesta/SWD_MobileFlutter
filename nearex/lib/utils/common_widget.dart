@@ -30,3 +30,9 @@ class DimensionValue {
     return MediaQuery.of(context).size.height;
   }
 }
+
+class Navigate {
+  static void navigate(Widget widget, BuildContext context) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => widget));
+  }
+}

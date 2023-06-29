@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nearex/customer/customer_notification.dart';
+import 'package:nearex/models/campaign.dart';
 import 'package:nearex/models/category.dart';
 import 'package:nearex/models/customer.dart';
 import 'package:nearex/models/store.dart';
@@ -21,48 +22,84 @@ class HomeCustomer extends StatefulWidget {
 }
 
 class _HomeCustomerState extends State<HomeCustomer> {
+  int _timeCall = 0;
   String? _customerName = '';
   double _screenWidth = 0;
   double _screenHeight = 0;
+  int _selectedCategory = 0;
   List<Store> stores = [];
   List<Category> categories = [];
+  List<Campaign> campaigns = [];
+
   @override
   Widget build(BuildContext context) {
-    initData();
-    return Container(
-      child: Column(
+    _screenWidth = DimensionValue.getScreenWidth(context);
+    _screenHeight = DimensionValue.getScreenHeight(context);
+    return FutureBuilder(
+        future: initData(),
+        builder: (context, snapshot) => Container(
+            margin: EdgeInsets.all(_screenWidth / 12),
+            child: ListView(children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [
+                      Column(
+                        children: [
+                          Text('Xin chào, $_customerName'),
+                          // get location nha
+                        ],
+                      ),
+                      IconButton(
+                          onPressed: () => Navigate.navigate(
+                              const CustomerNotification(), context),
+                          icon: const FaIcon(FontAwesomeIcons.bell))
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      //TextFormField(),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const FaIcon(
+                          FontAwesomeIcons.sliders,
+                          color: Colors.white,
+                        ),
+                        color: ColorBackground.eerieBlack,
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: _screenHeight / 22,
+                    child: ListView.separated(
+                      itemBuilder: (context, index) =>
+                          buildCategoryView(categories[index]),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(width: 12),
+                      itemCount: categories.length,
+                      scrollDirection: Axis.horizontal,
+                    ),
+                  ),
+                  buildMainView()
+                ],
+              ),
+            ])));
+  }
+
+  Widget buildMainView() {
+    if (_selectedCategory == 0) {
+      return Column(
         children: [
           Row(
             children: [
-              Column(
-                children: [
-                  Text('Xin chào, $_customerName'),
-                  // get location nha
-                ],
-              ),
-              IconButton(
-                  onPressed: () => {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const CustomerNotification()))
-                      },
-                  icon: const FaIcon(FontAwesomeIcons.bell))
-            ],
-          ),
-          Row(
-            children: [
-              IconButton(
-                  onPressed: () {},
-                  icon: const FaIcon(FontAwesomeIcons.sliders)) //filter
-            ],
-          ),
-          Row(
-            children: [
-              Text('Cửa hàng gần bạn'),
+              Text('Cửa hàng gần bạn',
+                  style: GoogleFonts.openSans(fontSize: 14)),
               TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // navigate den list store
+                  },
                   child: Text(
                     'Xem tất cả',
                     style: GoogleFonts.inter(
@@ -70,25 +107,53 @@ class _HomeCustomerState extends State<HomeCustomer> {
                   ))
             ],
           ),
-          // SizedBox(
-          //   height: _screenHeight / 4,
-          //   child: ListView.builder(
-          //     itemBuilder: (context, index) => buildStoreView(stores[index]),
-          //     itemCount: 5,
-          //     scrollDirection: Axis.horizontal,
-          //   ),
-          // ),
+          SizedBox(
+            height: _screenHeight / 4,
+            child: ListView.separated(
+              itemBuilder: (context, index) => buildStoreView(stores[index]),
+              itemCount: stores.length > 5 ? 5 : stores.length,
+              scrollDirection: Axis.horizontal,
+              separatorBuilder: (context, index) => const SizedBox(
+                width: 12,
+              ),
+            ),
+          ),
           Text('Đợt giảm giá hot'),
-          // ListView.builder(
-          //   itemBuilder: (context, index) => buildCampaignView(),
-          // )
+          GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+            ),
+            itemBuilder: (context, index) {
+              return buildCampaignView(campaigns[index]);
+            },
+          )
         ],
+      );
+    } else {
+      return Column();
+    }
+  }
+
+  Widget buildCategoryView(Category category) {
+    return ChoiceChip(
+      label: Text(
+        category.name,
+        style: const TextStyle(color: Colors.black),
       ),
+      selected: category.id == 0,
+      selectedColor: ColorBackground.blueberry,
+      backgroundColor: ColorBackground.diamond,
+      onSelected: (value) {
+        setState(() {
+          value = true;
+          _selectedCategory = category.id;
+        });
+      },
     );
   }
 
   Widget buildStoreView(Store store) {
-    return Container(
+    return SizedBox(
       width: _screenWidth / 3,
       child: Column(children: [
         Image.network(store.logo.toString()),
@@ -97,21 +162,34 @@ class _HomeCustomerState extends State<HomeCustomer> {
     );
   }
 
-  // Widget buildCampaignView(Campaign campaign) {
-  //   return Container(
-  //     decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-  //     width: _screenWidth * 0.4,
-  //     child: Column(children: [Image.network(src)]),
-  //   );
-  // }
+  Widget buildCampaignView(Campaign campaign) {
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      width: _screenWidth * 0.4,
+      child: Column(children: [
+        Image.network(campaign.product.productImg),
+        Text(campaign.product.productName)
+      ]),
+    );
+  }
 
-  void initData() async {
-    _screenWidth = DimensionValue.getScreenWidth(context);
-    _screenHeight = DimensionValue.getScreenHeight(context);
+  Future<bool> initData() async {
+    // if (_timeCall == 0) {
     String? customerJson = await DataStorage.storage.read(key: 'customer');
     if (customerJson != null) {
       _customerName = Customer.fromJson(jsonDecode(customerJson)).userName;
     }
-    categories = await CategoryService.getCategories();
+    categories.add(Category(id: 0, name: 'Tất cả'));
+    categories.addAll(await CategoryService.getCategories());
+    // _timeCall = 1;
+    // }
+    // if (_selectedCategory == 0) {
+    //   stores = await StoreService.getStores(1, 5);
+    //   campaigns = await CampaignService.getCampaigns(1, 20);
+    // } else {
+    //   campaigns = await CampaignService.getCampaignsByCategory(
+    //       1, 20, _selectedCategory);
+    // }
+    return true;
   }
 }
