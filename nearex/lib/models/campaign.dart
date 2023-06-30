@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:nearex/models/product.dart';
 
 class Campaign {
@@ -17,13 +18,17 @@ class Campaign {
       required this.product,
       required this.quantity});
   factory Campaign.fromJson(Map<String, dynamic> json) {
+    String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    DateTime startDate = DateFormat(dateFormat).parse(json['startDate']);
+    DateTime endDate = DateFormat(dateFormat).parse(json['endDate']);
+    DateTime exp = DateFormat(dateFormat).parse(json['exp']);
     return Campaign(
         id: json['id'],
-        startDate: json['startDate'],
-        endDate: json['endDate'],
+        startDate: startDate,
+        endDate: endDate,
         status: json['status'],
-        exp: json['exp'],
-        product: json['product'],
+        exp: exp,
+        product: Product.fromJson(json['product']),
         quantity: json['quantity']);
   }
   // "campaignDetails": [

@@ -31,7 +31,7 @@ class CampaignService {
       'cateId': categoryId.toString()
     };
     Uri uri = Uri.https(
-        'swd-nearex.azurewebsites.net', '/cate/api/campaigns', parameters);
+        'swd-nearex.azurewebsites.net', '/api/campaigns/cate', parameters);
     Response response = await get(uri);
     if (response.statusCode == 200) {
       var campaignsJson = jsonDecode(response.body)['results'];

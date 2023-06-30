@@ -8,7 +8,9 @@ import 'package:nearex/models/campaign.dart';
 import 'package:nearex/models/category.dart';
 import 'package:nearex/models/customer.dart';
 import 'package:nearex/models/store.dart';
+import 'package:nearex/services/campaign_service.dart';
 import 'package:nearex/services/category_service.dart';
+import 'package:nearex/services/store_service.dart';
 import 'package:nearex/utils/common_widget.dart';
 import 'package:nearex/utils/data_storage.dart';
 
@@ -35,43 +37,55 @@ class _HomeCustomerState extends State<HomeCustomer> {
   Widget build(BuildContext context) {
     _screenWidth = DimensionValue.getScreenWidth(context);
     _screenHeight = DimensionValue.getScreenHeight(context);
-    return FutureBuilder(
-        future: initData(),
-        builder: (context, snapshot) => Container(
-            margin: EdgeInsets.all(_screenWidth / 12),
-            child: ListView(children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    children: [
-                      Column(
-                        children: [
-                          Text('Xin chào, $_customerName'),
-                          // get location nha
-                        ],
+    return Container(
+        margin: EdgeInsets.all(_screenWidth / 24),
+        child: CustomScrollView(slivers: [
+          SliverToBoxAdapter(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                Row(
+                  children: [
+                    Column(
+                      children: [
+                        Text('Xin chào, $_customerName'),
+                        // get location nha
+                      ],
+                    ),
+                    IconButton(
+                        onPressed: () => Navigate.navigate(
+                            const CustomerNotification(), context),
+                        icon: const FaIcon(FontAwesomeIcons.bell))
+                  ],
+                ),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: _screenWidth * 0.75,
+                      child: const TextField(
+                        decoration:
+                            InputDecoration(hintText: 'Tìm tên sản phẩm'),
+                        textInputAction: TextInputAction.search,
                       ),
-                      IconButton(
-                          onPressed: () => Navigate.navigate(
-                              const CustomerNotification(), context),
-                          icon: const FaIcon(FontAwesomeIcons.bell))
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      //TextFormField(),
-                      IconButton(
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                          color: ColorBackground.eerieBlack,
+                          borderRadius: BorderRadius.circular(5)),
+                      child: IconButton(
                         onPressed: () {},
                         icon: const FaIcon(
                           FontAwesomeIcons.sliders,
                           color: Colors.white,
                         ),
-                        color: ColorBackground.eerieBlack,
-                      )
-                    ],
-                  ),
-                  SizedBox(
+                      ),
+                    )
+                  ],
+                ),
+                FutureBuilder(
+                  future: fetchDataFirstTimeCall(),
+                  builder: (context, snapshot) => SizedBox(
                     height: _screenHeight / 22,
                     child: ListView.separated(
                       itemBuilder: (context, index) =>
@@ -82,55 +96,80 @@ class _HomeCustomerState extends State<HomeCustomer> {
                       scrollDirection: Axis.horizontal,
                     ),
                   ),
-                  buildMainView()
-                ],
-              ),
-            ])));
+                ),
+              ])),
+          ...buildMainView()
+        ]));
   }
 
-  Widget buildMainView() {
+  List<Widget> buildMainView() {
     if (_selectedCategory == 0) {
-      return Column(
-        children: [
-          Row(
+      return [
+        SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('Cửa hàng gần bạn',
-                  style: GoogleFonts.openSans(fontSize: 14)),
-              TextButton(
-                  onPressed: () {
-                    // navigate den list store
-                  },
-                  child: Text(
-                    'Xem tất cả',
-                    style: GoogleFonts.inter(
-                        fontSize: 10, color: ColorBackground.blueberry),
-                  ))
+              Row(
+                children: [
+                  Text('Cửa hàng gần bạn',
+                      style: GoogleFonts.openSans(
+                          fontSize: 20, fontWeight: FontWeight.bold)),
+                  TextButton(
+                      onPressed: () {
+                        // navigate den list store
+                      },
+                      child: Text(
+                        'Xem tất cả',
+                        style: GoogleFonts.inter(
+                            fontSize: 12, color: ColorBackground.blueberry),
+                      ))
+                ],
+              ),
+              FutureBuilder(
+                future: fetchStoreData(),
+                builder: (context, snapshot) => SizedBox(
+                  height: _screenHeight / 4,
+                  child: ListView.separated(
+                    itemBuilder: (context, index) =>
+                        buildStoreView(stores[index]),
+                    itemCount: stores.length > 5 ? 5 : stores.length,
+                    scrollDirection: Axis.horizontal,
+                    separatorBuilder: (context, index) => const SizedBox(
+                      width: 12,
+                    ),
+                  ),
+                ),
+              ),
+              Text(
+                'Đợt giảm giá hot',
+                style: GoogleFonts.openSans(
+                    fontSize: 20, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.left,
+              ),
             ],
           ),
-          SizedBox(
-            height: _screenHeight / 4,
-            child: ListView.separated(
-              itemBuilder: (context, index) => buildStoreView(stores[index]),
-              itemCount: stores.length > 5 ? 5 : stores.length,
-              scrollDirection: Axis.horizontal,
-              separatorBuilder: (context, index) => const SizedBox(
-                width: 12,
-              ),
-            ),
-          ),
-          Text('Đợt giảm giá hot'),
-          GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-            ),
-            itemBuilder: (context, index) {
-              return buildCampaignView(campaigns[index]);
-            },
-          )
-        ],
-      );
+        ),
+        FutureBuilder(
+          future: fetchCampaignData(),
+          builder: (context, snapshot) => SliverGrid(
+              delegate: SliverChildBuilderDelegate((context, index) {
+                return buildCampaignView(campaigns[index]);
+              }, childCount: campaigns.length),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2)),
+        )
+      ];
     } else {
-      return Column();
+      return [
+        FutureBuilder(
+            future: fetchCampaignData(),
+            builder: (context, snapshot) => SliverGrid(
+                delegate: SliverChildBuilderDelegate(
+                    (context, index) => buildCampaignView(campaigns[index]),
+                    childCount: campaigns.length),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2)))
+      ];
     }
   }
 
@@ -156,7 +195,9 @@ class _HomeCustomerState extends State<HomeCustomer> {
     return SizedBox(
       width: _screenWidth / 3,
       child: Column(children: [
-        Image.network(store.logo.toString()),
+        Image.network(
+            'https://img.freepik.com/premium-vector/online-shop-logo-shopping-shop-logo_664675-1016.jpg'),
+        // Image.network(store.logo.toString()),
         Text(store.storeName.toString()),
       ]),
     );
@@ -167,29 +208,48 @@ class _HomeCustomerState extends State<HomeCustomer> {
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       width: _screenWidth * 0.4,
       child: Column(children: [
-        Image.network(campaign.product.productImg),
+        SizedBox(
+            width: _screenWidth / 3.3,
+            child: Image.network(
+                'https://img.freepik.com/free-vector/white-product-podium-with-green-tropical-palm-leaves-golden-round-arch-green-wall_87521-3023.jpg')
+            // Image.network(campaign.product.productImg),
+            ),
         Text(campaign.product.productName)
       ]),
     );
   }
 
-  Future<bool> initData() async {
-    // if (_timeCall == 0) {
-    String? customerJson = await DataStorage.storage.read(key: 'customer');
-    if (customerJson != null) {
-      _customerName = Customer.fromJson(jsonDecode(customerJson)).userName;
+  Future<List<Category>> fetchDataFirstTimeCall() async {
+    if (_timeCall == 0) {
+      String? customerJson = await DataStorage.storage.read(key: 'customer');
+      if (customerJson != null) {
+        _customerName = Customer.fromJson(jsonDecode(customerJson)).userName;
+      }
+      categories.add(Category(id: 0, name: 'Tất cả'));
+      categories.addAll(await CategoryService.getCategories());
+      _timeCall = 1;
     }
-    categories.add(Category(id: 0, name: 'Tất cả'));
-    categories.addAll(await CategoryService.getCategories());
-    // _timeCall = 1;
-    // }
-    // if (_selectedCategory == 0) {
-    //   stores = await StoreService.getStores(1, 5);
-    //   campaigns = await CampaignService.getCampaigns(1, 20);
-    // } else {
-    //   campaigns = await CampaignService.getCampaignsByCategory(
-    //       1, 20, _selectedCategory);
-    // }
-    return true;
+    return categories;
+  }
+
+  Future<List<Campaign>> fetchCampaignData() async {
+    if (_selectedCategory == 0) {
+      campaigns = await CampaignService.getCampaigns(1, 20);
+      return campaigns;
+    } else {
+      campaigns = await CampaignService.getCampaignsByCategory(
+          1, 20, _selectedCategory);
+      return campaigns;
+    }
+  }
+
+  Future<List<Store>> fetchStoreData() async {
+    stores = await StoreService.getStores(1, 5);
+    return stores;
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 }

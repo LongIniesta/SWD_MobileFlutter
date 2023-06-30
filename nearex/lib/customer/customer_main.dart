@@ -15,10 +15,10 @@ class MainCustomer extends StatefulWidget {
 class _MainCustomerState extends State<MainCustomer> {
   final List<Widget> _screens = [
     const HomeCustomer(),
-    const CustomerProfile(),
-    const CustomerOrder()
+    const CustomerOrder(),
+    const CustomerProfile()
   ];
-  int _currentIndex = 0;
+  int _currentIndex = 1;
   void _onDestinationSelected(int index) {
     setState(() {
       _currentIndex = index;
