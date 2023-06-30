@@ -29,86 +29,125 @@ class _CustomerProfileState extends State<CustomerProfile> {
   Widget build(BuildContext context) {
     _screenWidth = DimensionValue.getScreenWidth(context);
     _screenHeight = DimensionValue.getScreenHeight(context);
-    return SingleChildScrollView(
-      child: Container(
-        margin: EdgeInsets.all(_screenWidth / 24),
-        child: Column(
-          children: [
-            IconButton(
-                onPressed: () => {
-                      // ???
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Thông tin cá nhân', style: GoogleFonts.outfit()),
+      ),
+      body: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.all(_screenWidth / 24),
+          child: Column(
+            children: [
+              Form(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Image.asset('images/unknow.png'),
+                  Text('Họ và tên',
+                      style: GoogleFonts.openSans(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
+                  SizedBox(height: _screenWidth / 20),
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        hintText: 'Nguyễn Văn A',
+                        hintStyle: GoogleFonts.montserrat(fontSize: 14)),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Vui lòng nhập họ và tên';
+                      }
+                      return null;
                     },
-                icon: const Icon(Icons.arrow_back_rounded)),
-            Text('Thông tin cá nhân', style: GoogleFonts.outfit()),
-            Form(
-                child: Column(
-              children: [
-                Image.asset('images/unknow.png'),
-                Text('Họ và tên', style: GoogleFonts.openSans()),
-                TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                      hintText: 'Nguyễn Văn A',
-                      hintStyle: GoogleFonts.montserrat(fontSize: 14)),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập họ và tên';
-                    }
-                    return null;
-                  },
-                ),
-                Text('Email', style: GoogleFonts.openSans()),
-                TextFormField(
-                    controller: _emailController,
+                  ),
+                  SizedBox(height: _screenWidth / 20),
+                  Text('Email',
+                      style: GoogleFonts.openSans(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
+                  SizedBox(height: _screenWidth / 20),
+                  TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          hintText: 'Nguyễn Văn A',
+                          hintStyle: GoogleFonts.montserrat(fontSize: 14)),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Vui lòng nhập họ và tên';
+                        }
+                        return null;
+                      }),
+                  SizedBox(height: _screenWidth / 20),
+                  Text('Số điện thoại',
+                      style: GoogleFonts.openSans(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
+                  SizedBox(height: _screenWidth / 20),
+                  TextFormField(
+                      controller: _phoneNumberController,
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          hintText: 'Nguyễn Văn A',
+                          hintStyle: GoogleFonts.montserrat(fontSize: 14)),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Vui lòng nhập họ và tên';
+                        }
+                        return null;
+                      }),
+                  SizedBox(height: _screenWidth / 20),
+                  Text('Địa chỉ',
+                      style: GoogleFonts.openSans(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
+                  SizedBox(height: _screenWidth / 20),
+                  TextFormField(
+                      controller: _addressController,
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          hintText: 'Nguyễn Văn A',
+                          hintStyle: GoogleFonts.montserrat(fontSize: 14)),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Vui lòng nhập họ và tên';
+                        }
+                        return null;
+                      }),
+                  SizedBox(height: _screenWidth / 20),
+                  Text('Ngày sinh',
+                      style: GoogleFonts.openSans(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
+                  SizedBox(height: _screenWidth / 20),
+                  ElevatedButton(
+                      onPressed: _onPressedDatePicker,
+                      child: Text(_selectedDate.toString(),
+                          style: GoogleFonts.montserrat(fontSize: 14))),
+                  SizedBox(height: _screenWidth / 20),
+                  Text('Giới tính',
+                      style: GoogleFonts.openSans(
+                          fontWeight: FontWeight.bold, fontSize: 16)),
+                  SizedBox(height: _screenWidth / 20),
+                  //drop down
+                  TextField(
+                    controller: _genderController,
                     decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         hintText: 'Nguyễn Văn A',
                         hintStyle: GoogleFonts.montserrat(fontSize: 14)),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Vui lòng nhập họ và tên';
-                      }
-                      return null;
-                    }),
-                Text('Số điện thoại', style: GoogleFonts.openSans()),
-                TextFormField(
-                    controller: _phoneNumberController,
-                    decoration: InputDecoration(
-                        hintText: 'Nguyễn Văn A',
-                        hintStyle: GoogleFonts.montserrat(fontSize: 14)),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Vui lòng nhập họ và tên';
-                      }
-                      return null;
-                    }),
-                Text('Địa chỉ', style: GoogleFonts.openSans()),
-                TextFormField(
-                    controller: _addressController,
-                    decoration: InputDecoration(
-                        hintText: 'Nguyễn Văn A',
-                        hintStyle: GoogleFonts.montserrat(fontSize: 14)),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Vui lòng nhập họ và tên';
-                      }
-                      return null;
-                    }),
-                Text('Ngày sinh', style: GoogleFonts.openSans()),
-                ElevatedButton(
-                    onPressed: _onPressedDatePicker,
-                    child: Text(_selectedDate.toString(),
-                        style: GoogleFonts.montserrat(fontSize: 14))),
-                Text('Giới tính', style: GoogleFonts.openSans()),
-                //drop down
-                TextField(
-                  controller: _genderController,
-                  decoration: InputDecoration(
-                      hintText: 'Nguyễn Văn A',
-                      hintStyle: GoogleFonts.montserrat(fontSize: 14)),
-                ),
-              ],
-            ))
-          ],
+                  ),
+                ],
+              ))
+            ],
+          ),
         ),
       ),
     );

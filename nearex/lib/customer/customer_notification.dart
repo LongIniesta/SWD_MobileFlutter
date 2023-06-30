@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CustomerNotification extends StatefulWidget {
   const CustomerNotification({super.key});
@@ -12,6 +13,18 @@ class CustomerNotification extends StatefulWidget {
 class _CustomerNotificationState extends State<CustomerNotification> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      appBar: AppBar(
+          title: Row(
+        children: [
+          Text('Thông báo',
+              style: GoogleFonts.openSans(
+                  fontWeight: FontWeight.bold, fontSize: 20))
+        ],
+      )),
+      body: Container(
+        margin: EdgeInsets.all(12),
+      ),
+    );
   }
 }
