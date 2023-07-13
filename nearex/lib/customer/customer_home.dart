@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nearex/customer/customer_campaign_details.dart';
 import 'package:nearex/customer/customer_notification.dart';
 import 'package:nearex/models/campaign.dart';
 import 'package:nearex/models/category.dart';
@@ -33,6 +34,7 @@ class _HomeCustomerState extends State<HomeCustomer> {
     _screenHeight = DimensionValue.getScreenHeight(context);
     return Container(
         margin: EdgeInsets.all(_screenWidth / 24),
+        // decoration: const BoxDecoration(color: ColorBackground.bubbles),
         child: CustomScrollView(slivers: [
           SliverToBoxAdapter(
               child: Column(
@@ -64,13 +66,23 @@ class _HomeCustomerState extends State<HomeCustomer> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      width: _screenWidth * 0.75,
-                      child: const TextField(
-                        decoration:
-                            InputDecoration(hintText: 'Tìm tên sản phẩm'),
-                        textInputAction: TextInputAction.search,
-                      ),
-                    ),
+                        width: _screenWidth * 0.75,
+                        child: Form(
+                            child: Column(
+                          children: [
+                            TextFormField(
+                              decoration:
+                                  InputDecoration(hintText: 'Tìm tên sản phẩm'),
+                              textInputAction: TextInputAction.search,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Vui lòng nhập tên sản phẩm';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
+                        ))),
                     Container(
                       decoration: BoxDecoration(
                           color: ColorBackground.eerieBlack,
@@ -193,7 +205,7 @@ class _HomeCustomerState extends State<HomeCustomer> {
         category.name,
         style: const TextStyle(color: Colors.black),
       ),
-      selected: category.id == 0,
+      selected: category.id == _selectedCategory,
       selectedColor: ColorBackground.blueberry,
       backgroundColor: ColorBackground.diamond,
       onSelected: (value) {
@@ -206,36 +218,49 @@ class _HomeCustomerState extends State<HomeCustomer> {
   }
 
   Widget buildStoreView(Store store) {
-    return SizedBox(
-      width: _screenWidth / 3,
-      child: Column(children: [
-        Image.network(
-            'https://img.freepik.com/premium-vector/online-shop-logo-shopping-shop-logo_664675-1016.jpg'),
-        // Image.network(store.logo.toString()),
-        Text(store.storeName.toString()),
-      ]),
+    return InkWell(
+      child: SizedBox(
+        width: _screenWidth / 3,
+        child: Column(children: [
+          Image.network(
+              'https://img.freepik.com/free-vector/shop-with-sign-we-are-open_52683-38687.jpg'),
+          // Image.network(store.logo.toString()),
+          Text(store.storeName.toString()),
+        ]),
+      ),
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Tap on store id: ${store.id}")));
+      },
     );
   }
 
   Widget buildCampaignView(Campaign campaign) {
-    return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-      width: _screenWidth * 0.4,
-      child: Column(children: [
-        SizedBox(
+    return InkWell(
+      child: Container(
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+        width: _screenWidth * 0.4,
+        child: Column(children: [
+          SizedBox(
             width: _screenWidth / 3.3,
-            child: Image.network(
-                'https://img.freepik.com/free-vector/white-product-podium-with-green-tropical-palm-leaves-golden-round-arch-green-wall_87521-3023.jpg')
-            // Image.network(campaign.product.productImg),
-            ),
-        Text(campaign.product.productName)
-      ]),
+            child: Image.network(campaign.product.productImg),
+          ),
+          Text(campaign.product.productName)
+        ]),
+      ),
+      onTap: () {
+        Navigate.navigate(CustomerCampaignDetails(campaign: campaign), context);
+        // CustomerCampaignDetails(campaignId: campaign.id), context);
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //     SnackBar(content: Text("Tap on campaign id: ${campaign.id}")));
+      },
     );
   }
 
   Future<List<Category>> fetchDataFirstTimeCall() async {
     // if (_timeCall == 0) {
-    //   String? customerJson = await DataStorage.storage.read(key: 'customer');
+    //   String? customerJson =
+    //       await DataStorage.secureStorage.read(key: 'customer');
     //   if (customerJson != null) {
     //     _customerName = Customer.fromJson(jsonDecode(customerJson)).userName;
     //   }
@@ -244,7 +269,6 @@ class _HomeCustomerState extends State<HomeCustomer> {
     //   _timeCall = 1;
     // }
 
-    // fake dữ liệu để test cho nhanh, call api lâu quá
     categories = [
       Category(id: 0, name: 'Tất cả'),
       Category(id: 1, name: 'Thịt cá'),
@@ -263,30 +287,15 @@ class _HomeCustomerState extends State<HomeCustomer> {
   Future<List<Campaign>> fetchCampaignData() async {
     // if (_selectedCategory == 0) {
     //   campaigns = await CampaignService.getCampaigns(1, 20);
+    //   // await CampaignService.getCampaignsByEndDate(1, 20, DateTime.now());
     //   return campaigns;
     // } else {
     //   campaigns = await CampaignService.getCampaignsByCategory(
     //       1, 20, _selectedCategory);
-    // return campaigns;
+    //   return campaigns;
     // }
 
     campaigns = [
-      Campaign(
-          id: 0,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
       Campaign(
           id: 1,
           startDate: DateTime(2023, 6, 30),
@@ -297,12 +306,15 @@ class _HomeCustomerState extends State<HomeCustomer> {
               id: 0,
               price: 100000,
               origin: 'origin',
-              productImg: 'productImg',
+              productImg:
+                  'https://img.freepik.com/free-vector/white-product-podium-with-green-tropical-palm-leaves-golden-round-arch-green-wall_87521-3023.jpg',
               productName: 'productName',
               description: 'description',
               unit: 'gam',
               netWeight: 680),
-          quantity: 100),
+          quantity: 100,
+          discountPrice: 50000,
+          minQuantity: 1),
       Campaign(
           id: 2,
           startDate: DateTime(2023, 6, 30),
@@ -313,12 +325,15 @@ class _HomeCustomerState extends State<HomeCustomer> {
               id: 0,
               price: 100000,
               origin: 'origin',
-              productImg: 'productImg',
+              productImg:
+                  'https://img.freepik.com/free-vector/white-product-podium-with-green-tropical-palm-leaves-golden-round-arch-green-wall_87521-3023.jpg',
               productName: 'productName',
               description: 'description',
               unit: 'gam',
               netWeight: 680),
-          quantity: 100),
+          quantity: 100,
+          discountPrice: 50000,
+          minQuantity: 1),
       Campaign(
           id: 3,
           startDate: DateTime(2023, 6, 30),
@@ -329,12 +344,15 @@ class _HomeCustomerState extends State<HomeCustomer> {
               id: 0,
               price: 100000,
               origin: 'origin',
-              productImg: 'productImg',
+              productImg:
+                  'https://img.freepik.com/free-vector/white-product-podium-with-green-tropical-palm-leaves-golden-round-arch-green-wall_87521-3023.jpg',
               productName: 'productName',
               description: 'description',
               unit: 'gam',
               netWeight: 680),
-          quantity: 100),
+          quantity: 100,
+          discountPrice: 50000,
+          minQuantity: 1),
       Campaign(
           id: 4,
           startDate: DateTime(2023, 6, 30),
@@ -345,284 +363,15 @@ class _HomeCustomerState extends State<HomeCustomer> {
               id: 0,
               price: 100000,
               origin: 'origin',
-              productImg: 'productImg',
+              productImg:
+                  'https://img.freepik.com/free-vector/white-product-podium-with-green-tropical-palm-leaves-golden-round-arch-green-wall_87521-3023.jpg',
               productName: 'productName',
               description: 'description',
               unit: 'gam',
               netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 5,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 6,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 7,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 8,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 9,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 10,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 11,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 12,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 13,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 14,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 15,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 16,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 17,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 18,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 19,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 20,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
-      Campaign(
-          id: 21,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg: 'productImg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100),
+          quantity: 100,
+          discountPrice: 50000,
+          minQuantity: 1),
     ];
     return campaigns;
   }

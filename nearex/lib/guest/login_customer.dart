@@ -115,7 +115,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
   }
 
   void saveCustomerState(String customerJson) {
-    DataStorage.storage.write(key: "customer", value: customerJson);
+    DataStorage.secureStorage.write(key: "customer", value: customerJson);
   }
 
   void navigate() {

@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nearex/models/customer.dart';
 import 'package:nearex/utils/common_widget.dart';
 import 'package:nearex/utils/data_storage.dart';
+import 'package:nearex/utils/firebase_api.dart';
 
 class CustomerProfile extends StatefulWidget {
   const CustomerProfile({super.key});
@@ -18,7 +21,6 @@ class CustomerProfile extends StatefulWidget {
 class _CustomerProfileState extends State<CustomerProfile> {
   Customer? customer;
   double _screenWidth = 0;
-  double _screenHeight = 0;
   TextEditingController? _nameController;
   TextEditingController? _emailController;
   TextEditingController? _phoneNumberController;
@@ -28,7 +30,6 @@ class _CustomerProfileState extends State<CustomerProfile> {
   @override
   Widget build(BuildContext context) {
     _screenWidth = DimensionValue.getScreenWidth(context);
-    _screenHeight = DimensionValue.getScreenHeight(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Thông tin cá nhân', style: GoogleFonts.outfit()),
@@ -43,13 +44,20 @@ class _CustomerProfileState extends State<CustomerProfile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Image.asset('images/unknow.png'),
+                  InkWell(
+                    onTap: _selectFile,
+                    child: Image.asset(
+                      'images/unknow.png',
+                      scale: 1,
+                    ),
+                  ),
                   Text('Họ và tên',
                       style: GoogleFonts.openSans(
                           fontWeight: FontWeight.bold, fontSize: 16)),
                   SizedBox(height: _screenWidth / 20),
                   TextFormField(
                     controller: _nameController,
+                    initialValue: customer?.userName,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -70,6 +78,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
                   SizedBox(height: _screenWidth / 20),
                   TextFormField(
                       controller: _emailController,
+                      initialValue: customer?.email,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -154,7 +163,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
   }
 
   void fetchCustomerProfileData() async {
-    final customerJson = await DataStorage.storage.read(key: 'customer');
+    final customerJson = await DataStorage.secureStorage.read(key: 'customer');
     if (customerJson != null) {
       setState(() {
         customer = Customer.fromJson(jsonDecode(customerJson));
@@ -183,5 +192,23 @@ class _CustomerProfileState extends State<CustomerProfile> {
     _phoneNumberController = TextEditingController(text: customer?.phone);
     _addressController = TextEditingController(text: customer?.address);
     _genderController = TextEditingController(text: customer?.gender);
+  }
+
+  void _selectFile() async {
+    final result = await FilePicker.platform.pickFiles(type: FileType.image);
+    if (result == null) {
+      return;
+    }
+    PlatformFile platformFile = result.files.first;
+    File file = File(platformFile.path!);
+    // String fileName = 'avatar-$customerId';
+    FirebaseStorageService.uploadFile(
+        file: file,
+        fileName: 'avatar-9',
+        fileDirectory: FirebaseStorageService.imageDirectory);
+  }
+
+  void _update() {
+    // _emailController.text;
   }
 }

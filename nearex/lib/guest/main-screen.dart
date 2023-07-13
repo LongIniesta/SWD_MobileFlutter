@@ -2,16 +2,13 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
-import 'package:nearex/utils/data_storage.dart';
 import 'package:nearex/guest/createaccount.dart';
-import 'package:nearex/guest/createpass.dart';
 import 'package:nearex/guest/loginstore.dart';
-
 import 'package:nearex/guest/otpconfirm.dart';
 import 'package:nearex/guest/passwordtologin.dart';
+import 'package:nearex/utils/data_storage.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -379,6 +376,6 @@ class MainScreenState extends State<MainScreen> {
   }
 
   void saveCustomerState(String customerJson) {
-    DataStorage.storage.write(key: "customer", value: customerJson);
+    DataStorage.secureStorage.write(key: "customer", value: customerJson);
   }
 }

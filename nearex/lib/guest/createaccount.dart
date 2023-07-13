@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,7 +10,6 @@ import 'package:geocoding/geocoding.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
-import 'package:file_picker/file_picker.dart';
 import 'package:nearex/place/mapscreen.dart';
 
 class CreateAccount extends StatefulWidget {
@@ -350,7 +349,8 @@ class CreateAccountState extends State<CreateAccount> {
                                 child: Text(
                                   'check',
                                   style: GoogleFonts.sourceSansPro(
-                                      color: const Color.fromARGB(255, 212, 249, 255),
+                                      color: const Color.fromARGB(
+                                          255, 212, 249, 255),
                                       fontSize: 20,
                                       fontWeight: FontWeight.w700),
                                 ),
@@ -437,7 +437,9 @@ class CreateAccountState extends State<CreateAccount> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 300,)
+                      const SizedBox(
+                        height: 300,
+                      )
                     ],
                   ),
                 ),
@@ -601,28 +603,25 @@ class CreateAccountState extends State<CreateAccount> {
   }
 
   Future<void> checkAddress() async {
-    
     try {
       List<Location> locations = await locationFromAddress(address);
       if (locations.isNotEmpty) {
-      Location firstLocation = locations.first;
-      setState(() {
-        isAddressValid = true;
-        longtitude = firstLocation.longitude;
-        latitude = firstLocation.latitude;
-      });
-    } else {
-      setState(() {
-        isAddressValid = false;
-      });
-    }
-    } catch (e) {
+        Location firstLocation = locations.first;
         setState(() {
+          isAddressValid = true;
+          longtitude = firstLocation.longitude;
+          latitude = firstLocation.latitude;
+        });
+      } else {
+        setState(() {
+          isAddressValid = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
         isAddressValid = false;
       });
     }
-
-    
   }
 
   Future<void> showMap(double longitude, double latitude) async {

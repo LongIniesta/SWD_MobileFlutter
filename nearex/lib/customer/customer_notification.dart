@@ -13,6 +13,7 @@ class CustomerNotification extends StatefulWidget {
 class _CustomerNotificationState extends State<CustomerNotification> {
   @override
   Widget build(BuildContext context) {
+    final message = ModalRoute.of(context)!.settings.arguments;
     return Scaffold(
       appBar: AppBar(
           title: Row(
@@ -24,7 +25,14 @@ class _CustomerNotificationState extends State<CustomerNotification> {
       )),
       body: Container(
         margin: EdgeInsets.all(12),
+        child: Column(children: [Text(message.toString())]),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // await FirebaseApi().initNotifications();
   }
 }

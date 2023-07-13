@@ -9,6 +9,9 @@ class Campaign {
   DateTime exp;
   Product product;
   int quantity;
+  int minQuantity;
+  int discountPrice;
+  // List<CampaignDetails> campaignDetails;
   Campaign(
       {required this.id,
       required this.startDate,
@@ -16,12 +19,29 @@ class Campaign {
       required this.status,
       required this.exp,
       required this.product,
-      required this.quantity});
+      required this.quantity,
+      required this.discountPrice,
+      required this.minQuantity
+      // required this.campaignDetails
+      });
   factory Campaign.fromJson(Map<String, dynamic> json) {
-    String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    String dateFormat = "yyyy-MM-dd";
     DateTime startDate = DateFormat(dateFormat).parse(json['startDate']);
     DateTime endDate = DateFormat(dateFormat).parse(json['endDate']);
     DateTime exp = DateFormat(dateFormat).parse(json['exp']);
+    double discountPrice = json['product']['price'] * 1000;
+    int minQuantity = 1;
+    var campaignDetailsJson = json['campaignDetails'];
+    for (int i = campaignDetailsJson.length - 1; i >= 0; i--) {
+      Map<String, dynamic> campaignDetailJson = campaignDetailsJson[i];
+      DateTime dateApply =
+          DateFormat(dateFormat).parse(campaignDetailJson['dateApply']);
+      if (dateApply.isAfter(DateTime.now())) {
+        discountPrice = campaignDetailJson['discount'] * 1000;
+        minQuantity = campaignDetailJson['minQuantity'];
+        break;
+      }
+    }
     return Campaign(
         id: json['id'],
         startDate: startDate,
@@ -29,22 +49,32 @@ class Campaign {
         status: json['status'],
         exp: exp,
         product: Product.fromJson(json['product']),
-        quantity: json['quantity']);
+        quantity: json['quantity'],
+        discountPrice: discountPrice.toInt(),
+        minQuantity: minQuantity
+        // campaignDetails: CampaignDetails.fromJson(json['campaignDetails'])
+        );
   }
-  // "campaignDetails": [
-  //   {
-  //     "id": 1,
-  //     "dateApply": "2023-06-28T09:14:45.687",
-  //     "percentDiscount": 20,
-  //     "discount": 34.327,
-  //     "minQuantity": 1
-  //   },
-  //   {
-  //     "id": 2,
-  //     "dateApply": "2023-07-07T09:16:01.35",
-  //     "percentDiscount": 40,
-  //     "discount": 25.745,
-  //     "minQuantity": 1
-  //   }
-  // ]
+}
+
+class CampaignDetails {
+  int id;
+  DateTime dateApply;
+  int percentDiscount;
+  int discount;
+  int minQuantity;
+  CampaignDetails(
+      {required this.id,
+      required this.dateApply,
+      required this.percentDiscount,
+      required this.discount,
+      required this.minQuantity});
+  factory CampaignDetails.fromJson(Map<String, dynamic> json) {
+    return CampaignDetails(
+        id: json['id'],
+        dateApply: json['dateApply'],
+        percentDiscount: json['percentDiscount'],
+        discount: json['discount'],
+        minQuantity: json['minQuantity']);
+  }
 }

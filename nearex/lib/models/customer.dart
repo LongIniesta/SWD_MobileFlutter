@@ -13,6 +13,7 @@ class Customer {
   DateTime? verifiedAt;
   String? passwordResetToken;
   DateTime? resetTokenExpires;
+  final String token;
 
   Customer(
       {required this.id,
@@ -28,7 +29,8 @@ class Customer {
       required this.verificationToken,
       required this.verifiedAt,
       required this.passwordResetToken,
-      required this.resetTokenExpires});
+      required this.resetTokenExpires,
+      required this.token});
 
   factory Customer.fromJson(Map<String, dynamic> json) {
     return Customer(
@@ -45,6 +47,7 @@ class Customer {
         verificationToken: json['verificationToken'],
         verifiedAt: json['verifiedAt'],
         passwordResetToken: json['passwordResetToken'],
-        resetTokenExpires: json['resetTokenExpires']);
+        resetTokenExpires: json['resetTokenExpires'],
+        token: json['token']);
   }
 }

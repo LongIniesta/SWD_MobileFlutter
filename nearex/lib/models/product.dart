@@ -2,7 +2,7 @@ import 'package:nearex/models/category.dart';
 
 class Product {
   int id;
-  double price;
+  int price;
   String origin;
   String productImg;
   String productName;
@@ -36,9 +36,10 @@ class Product {
       required this.netWeight});
 
   factory Product.fromJson(Map<String, dynamic> json) {
+    double price = json['price'] * 1000;
     return Product(
         id: json['id'],
-        price: json['price'],
+        price: price.toInt(),
         origin: json['origin'],
         productImg: json['productImg'],
         productName: json['productName'],

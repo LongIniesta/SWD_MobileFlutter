@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nearex/models/order.dart';
+import 'package:nearex/services/order_service.dart';
 import 'package:nearex/utils/common_widget.dart';
+import 'package:nearex/utils/data_storage.dart';
 
 class CustomerOrder extends StatefulWidget {
   const CustomerOrder({super.key});
@@ -11,11 +14,10 @@ class CustomerOrder extends StatefulWidget {
 }
 
 class _CustomerOrderState extends State<CustomerOrder> {
-  late double _screenHeight;
+  List<Order?> orders = [];
   late double _screenWidth;
   @override
   Widget build(BuildContext context) {
-    _screenHeight = DimensionValue.getScreenHeight(context);
     _screenWidth = DimensionValue.getScreenWidth(context);
     return DefaultTabController(
         length: 2,
@@ -45,5 +47,12 @@ class _CustomerOrderState extends State<CustomerOrder> {
             ])),
           ),
         ));
+  }
+
+  Future<List<Order?>> _getOrders() async {
+    int customerId =
+        await DataStorage.secureStorage.read(key: 'customerId') as int;
+    orders = await OrderService.getOrdersByCustomerId(1, 10, customerId);
+    return orders;
   }
 }
