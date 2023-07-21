@@ -36,6 +36,7 @@ class _CustomerOrderState extends State<CustomerOrder> {
             ]),
           ),
           body: Container(
+            width: _screenWidth / 5 * 4,
             margin: EdgeInsets.all(_screenWidth / 24),
             child: Expanded(
                 child: TabBarView(children: [
@@ -43,6 +44,7 @@ class _CustomerOrderState extends State<CustomerOrder> {
                 child: FutureBuilder(
                   future: _getOrders(0),
                   builder: (context, snapshot) => ListView.builder(
+                      scrollDirection: Axis.vertical,
                       itemBuilder: (context, index) =>
                           buildOrderView(orders[index])),
                 ),
@@ -64,13 +66,14 @@ class _CustomerOrderState extends State<CustomerOrder> {
     int customerId =
         await DataStorage.secureStorage.read(key: 'customerId') as int;
     orders = await OrderService.getOrders(
-        customerId: customerId, page: 1, pageSize: 10, status: status);
+        customerId: 9, page: 1, pageSize: 10, status: status);
     return orders;
   }
 
   Widget buildOrderView(Order order) {
     return InkWell(
       child: Container(
+        height: _screenWidth / 4,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10), color: Colors.white),
         margin: EdgeInsets.all(_screenWidth / 60),

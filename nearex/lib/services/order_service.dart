@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:http/http.dart';
-import 'package:nearex/models/customer.dart';
 import 'package:nearex/models/order.dart';
 
 class OrderService {
@@ -47,17 +46,16 @@ class OrderService {
       required int customerId,
       required String paymentMethod,
       DateTime? paymentTime}) async {
-    Customer? customer;
     Order? order;
     Uri uri = Uri.parse('https://swd-nearex.azurewebsites.net/api/orders');
     var body = jsonEncode(<String, dynamic>{
-      "orderDate": DateTime.now().toString(),
+      "orderDate": DateTime.now().toIso8601String(),
       "quantity": quantity,
       "campaignId": campaignId,
       "customerId": customerId,
       "paymentRequest": {
         "method": paymentMethod,
-        "time": paymentTime ?? DateTime.now()
+        "time": paymentTime ?? DateTime.now().toIso8601String()
       }
     });
     Map<String, String> headers = {

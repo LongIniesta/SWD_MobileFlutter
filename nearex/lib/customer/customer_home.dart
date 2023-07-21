@@ -208,7 +208,7 @@ class _HomeCustomerState extends State<HomeCustomer> {
           builder: (context, snapshot) => SliverGrid(
               delegate: SliverChildBuilderDelegate((context, index) {
                 return buildCampaignView(campaigns[index]);
-              }),
+              }, childCount: campaigns.length),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2, childAspectRatio: 0.75)),
         ),
@@ -221,7 +221,7 @@ class _HomeCustomerState extends State<HomeCustomer> {
                 delegate: SliverChildBuilderDelegate(
                     (context, index) => buildCampaignView(campaigns[index])),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, childAspectRatio: 0.1)))
+                    crossAxisCount: 2, childAspectRatio: 0.5)))
       ];
     }
   }

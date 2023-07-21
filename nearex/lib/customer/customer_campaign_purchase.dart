@@ -204,6 +204,20 @@ class _CustomerCampaignPurchaseState extends State<CustomerCampaignPurchase> {
   void _order() async {
     if (_selectedPaymentMethod == 'Zalopay') {
       await ZalopayService.createOrder();
+      String response = "";
+      try {
+        final String result =
+            await platform.invokeMethod('payOrder', {"zptoken": zpToken});
+        response = result;
+        print("payOrder Result: '$result'.");
+      } on PlatformException catch (e) {
+        print("Failed to Invoke: '${e.message}'.");
+        response = "Thanh toán thất bại";
+      }
+      print(response);
+      setState(() {
+        payResult = response;
+      });
       await OrderService.saveOrder(
           quantity: widget.quantity,
           campaignId: widget.campaign!.id,
@@ -216,20 +230,5 @@ class _CustomerCampaignPurchaseState extends State<CustomerCampaignPurchase> {
           customerId: CustomerService.customer!.id,
           paymentMethod: _selectedPaymentMethod);
     }
-
-    String response = "";
-    try {
-      final String result =
-          await platform.invokeMethod('payOrder', {"zptoken": zpToken});
-      response = result;
-      print("payOrder Result: '$result'.");
-    } on PlatformException catch (e) {
-      print("Failed to Invoke: '${e.message}'.");
-      response = "Thanh toán thất bại";
-    }
-    print(response);
-    setState(() {
-      payResult = response;
-    });
   }
 }
