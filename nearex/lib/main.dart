@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:nearex/firebase_options.dart';
 import 'package:nearex/model/store.dart';
 import 'package:nearex/store/homestore.dart';
+import 'customer/customer_main.dart';
 import 'guest/app_intro.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 void initializeFirebaseMessaging() {
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     print('Received message: ${message.notification!.title}');
   });
-import 'package:nearex/customer/customer_main.dart';
+
 
 final navigatorKey = GlobalKey<NavigatorState>();
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {

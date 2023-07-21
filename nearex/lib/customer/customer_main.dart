@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:nearex/customer/customer_home.dart';
 import 'package:nearex/customer/customer_order.dart';
 import 'package:nearex/customer/customer_profile.dart';
+import 'package:nearex/model/customer.dart';
 import 'package:nearex/utils/data_storage.dart';
 
 class MainCustomer extends StatefulWidget {
-  const MainCustomer({super.key});
-
+  MainCustomer({super.key, required this.customer});
+  Customer customer;
   @override
   State<StatefulWidget> createState() {
-    return _MainCustomerState();
+    return _MainCustomerState(customer);
   }
 }
 
@@ -19,7 +20,10 @@ class _MainCustomerState extends State<MainCustomer> {
     const CustomerOrder(),
     const CustomerProfile()
   ];
+  Customer customer;
   int _currentIndex = 0;
+  
+  _MainCustomerState(this.customer);
   void _onDestinationSelected(int index) {
     setState(() {
       _currentIndex = index;

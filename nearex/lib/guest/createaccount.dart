@@ -10,6 +10,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:nearex/guest/main-screen.dart';
 import 'package:nearex/place/mapscreen.dart';
 
 class CreateAccount extends StatefulWidget {
@@ -594,6 +595,11 @@ class CreateAccountState extends State<CreateAccount> {
       if (response.statusCode == 200) {
         // Request thành công, xử lý response
         print('Response body: ${response.body}');
+        // ignore: use_build_context_synchronously
+        Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>MainScreen()));
       } else {
         // Request thất bại, xử lý lỗi
         print('Request failed with status code: ${response.body}');

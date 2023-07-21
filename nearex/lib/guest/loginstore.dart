@@ -1,15 +1,10 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:nearex/model/store.dart';
-import 'package:nearex/store/homestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../model/product.dart';
 
-import 'package:nearex/models/store.dart';
 
 class LoginStore extends StatefulWidget {
   const LoginStore({super.key});

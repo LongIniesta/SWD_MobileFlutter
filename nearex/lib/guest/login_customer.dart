@@ -69,7 +69,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
                 onPressed: () async {
                   if (await login(
                       _passwordController.text, _phoneController.text)) {
-                    navigate();
+                    //navigate();
                   }
                 },
                 child: const Text('Login'))
@@ -78,7 +78,7 @@ class _CustomerLoginState extends State<CustomerLogin> {
         ElevatedButton(
             onPressed: () async {
               if (await loginWithGoogle()) {
-                navigate();
+              //  navigate();
               }
             },
             child: const Text('Login with Google'))
@@ -118,8 +118,8 @@ class _CustomerLoginState extends State<CustomerLogin> {
     DataStorage.secureStorage.write(key: "customer", value: customerJson);
   }
 
-  void navigate() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const MainCustomer()));
-  }
+  // void navigate() {
+  //   Navigator.push(
+  //       context, MaterialPageRoute(builder: (context) => const MainCustomer()));
+  // }
 }
