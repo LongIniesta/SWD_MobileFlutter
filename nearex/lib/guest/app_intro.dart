@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:nearex/common/common_widget.dart';
 import 'package:nearex/guest/advantage_introduction.dart';
+import 'package:nearex/utils/common_widget.dart';
 
 class AppStart extends StatefulWidget {
   const AppStart({super.key});
@@ -42,22 +42,35 @@ class AppIntro extends StatefulWidget {
 }
 
 class _AppIntroState extends State<AppIntro> {
+  late double _screenWidth;
   @override
   Widget build(BuildContext context) {
+    _screenWidth = DimensionValue.getScreenWidth(context);
     return Scaffold(
         body: Container(
             width: double.maxFinite,
-            decoration: const BoxDecoration(color: ColorBackground.eerieBlack),
+            decoration: const BoxDecoration(color: ColorBackground.textColor1),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset('images/logo_slogan.png'),
-                const Text(
-                  'Cuối tháng hết tiền? Một bữa no với chi phí cực rẻ? Tại sao không?',
-                  style: TextStyle(color: Color.fromARGB(255, 175, 175, 175)),
+                Container(
+                  margin: EdgeInsets.symmetric(
+                      vertical: 0, horizontal: _screenWidth / 12),
+                  child: Text(
+                    'Cuối tháng hết tiền? Một bữa no với chi phí cực rẻ? Tại sao không?',
+                    style: GoogleFonts.roboto(
+                      color: const Color.fromARGB(255, 175, 175, 175),
+                      fontSize: _screenWidth / 30,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-                SizedBox(height: 10,),
+                SizedBox(
+                  height: _screenWidth / 12,
+                ),
                 InkWell(
                     onTap: _onTap,
                     child: Container(
@@ -65,9 +78,11 @@ class _AppIntroState extends State<AppIntro> {
                       decoration: BoxDecoration(
                           shape: BoxShape.rectangle,
                           borderRadius: BorderRadius.circular(50),
-                          color: ColorBackground.bubbles),
+                          color: ColorBackground.backgroundColor1),
                       child: Padding(
-                        padding: const EdgeInsets.all(10),
+                        padding: EdgeInsets.symmetric(
+                            vertical: _screenWidth / 36,
+                            horizontal: _screenWidth / 30),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -90,7 +105,7 @@ class _AppIntroState extends State<AppIntro> {
                                   gradient: ColorBackground.blueGradient),
                               child: const Icon(
                                 Icons.arrow_forward_rounded,
-                                color: ColorBackground.bubbles,
+                                color: ColorBackground.backgroundColor1,
                               ),
                             )
                           ],

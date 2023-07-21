@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/product.dart';
 
+import 'package:nearex/models/store.dart';
 
 class LoginStore extends StatefulWidget {
   const LoginStore({super.key});
@@ -231,20 +232,8 @@ class LoginStoreState extends State<LoginStore> {
         );
         
         if (response.statusCode == 200) {
-          Store store = parseJson(response.body);
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString('Loginwith', 'Store');
-          await prefs.setString('Store', response.body);
-
-          print('token: Bearer ${store.token}');
-
-          // ignore: use_build_context_synchronously
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => StoreScreen(
-                        store: store,
-                      )));
+         Store store = parseJson(response.body);
+         print(store.address);
         } else {
           print(response.statusCode.toString());
           setState(() {

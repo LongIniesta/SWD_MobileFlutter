@@ -40,16 +40,26 @@ dependencies:
 
   firebase_core: ^2.14.0
   firebase_auth: ^4.6.3
-  google_sign_in: ^5.4.2
+  google_sign_in: ^6.1.4
   google_fonts: ^4.0.0
   visibility_detector: ^0.4.0+2
   flutter_animate: ^4.1.1+1
   http: ^0.13.0
   file_picker: ^5.3.2
-  firebase_storage: ^11.0.2
+  firebase_storage: ^11.2.4
   geocoding: ^2.1.0
   flutter_map: ^0.13.1
   latlong2: ^0.8.0
+  flutter_secure_storage: ^8.0.0
+  font_awesome_flutter: ^10.4.0
+  intl: ^0.17.0
+  firebase_messaging: ^14.6.4
+  flutter_local_notifications: ^14.1.1
+  mime: ^1.0.4
+  flutter_zalopay_sdk: ^0.1.13
+  uuid: ^3.0.7
+  crypto: ^3.0.3
+  provider: ^6.0.5
   dio: ^4.0.4
   firebase_messaging: ^14.6.4
   shared_preferences: ^2.0.8
@@ -104,6 +114,8 @@ flutter:
     - images/notificationbig.png
     - images/product.png
     - images/uploadimg.png
+    - images/icon_zalopay.png
+    - images/icon_food.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

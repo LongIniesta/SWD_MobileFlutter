@@ -7,6 +7,7 @@ import 'package:nearex/guest/createaccount.dart';
 import 'package:nearex/guest/loginstore.dart';
 import 'package:nearex/guest/otpconfirm.dart';
 import 'package:nearex/guest/passwordtologin.dart';
+import 'package:nearex/utils/data_storage.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -286,6 +287,7 @@ class MainScreenState extends State<MainScreen> {
           if (response.body == 'false') { 
             await sendOTP(phone);
           } else {
+            saveCustomerState(response.body);
             // ignore: use_build_context_synchronously
             Navigator.push(
                 context,
@@ -371,5 +373,9 @@ class MainScreenState extends State<MainScreen> {
     });
     // Once signed in, return the UserCredential
     return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
+  void saveCustomerState(String customerJson) {
+    DataStorage.secureStorage.write(key: "customer", value: customerJson);
   }
 }

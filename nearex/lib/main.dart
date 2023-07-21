@@ -11,7 +11,9 @@ void initializeFirebaseMessaging() {
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     print('Received message: ${message.notification!.title}');
   });
+import 'package:nearex/customer/customer_main.dart';
 
+final navigatorKey = GlobalKey<NavigatorState>();
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
     print('Opened app from notification: ${message.notification!.title}');
   });

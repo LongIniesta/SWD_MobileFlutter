@@ -1,8 +1,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="nearex"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data
+            android:name="com.vng.zalo.sdk.APP_ID"
+            android:value="2554" />
+        <meta-data
+            android:name="com.vng.zalo.sdk.URI_SCHEME"
+            android:value="demozpdk://app" />
+        <meta-data
+            android:name="com.vng.zalo.sdk.ENVIRONMENT"
+            android:value="SANDBOX" /> // OR value="PRODUCTION"
         <activity
             android:name=".MainActivity"
             android:exported="true"

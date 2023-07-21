@@ -1,0 +1,119 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:nearex/models/order.dart';
+import 'package:nearex/services/order_service.dart';
+import 'package:nearex/utils/common_widget.dart';
+import 'package:nearex/utils/data_storage.dart';
+
+class CustomerOrder extends StatefulWidget {
+  const CustomerOrder({super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _CustomerOrderState();
+  }
+}
+
+class _CustomerOrderState extends State<CustomerOrder> {
+  List<Order> orders = [];
+  late double _screenWidth;
+  @override
+  Widget build(BuildContext context) {
+    _screenWidth = DimensionValue.getScreenWidth(context);
+    return DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Trạng thái đơn hàng'),
+            // segmented control for ios, tabbar for android?
+            bottom: const TabBar(tabs: [
+              Tab(
+                text: 'Đã đặt hàng',
+              ),
+              Tab(
+                text: 'Đã nhận',
+              )
+            ]),
+          ),
+          body: Container(
+            margin: EdgeInsets.all(_screenWidth / 24),
+            child: Expanded(
+                child: TabBarView(children: [
+              SingleChildScrollView(
+                child: FutureBuilder(
+                  future: _getOrders(0),
+                  builder: (context, snapshot) => ListView.builder(
+                      itemBuilder: (context, index) =>
+                          buildOrderView(orders[index])),
+                ),
+              ),
+              SingleChildScrollView(
+                child: FutureBuilder(
+                  future: _getOrders(1),
+                  builder: (context, snapshot) => ListView.builder(
+                      itemBuilder: (context, index) =>
+                          buildOrderView(orders[index])),
+                ),
+              ),
+            ])),
+          ),
+        ));
+  }
+
+  Future<List<Order>> _getOrders(int status) async {
+    int customerId =
+        await DataStorage.secureStorage.read(key: 'customerId') as int;
+    orders = await OrderService.getOrders(
+        customerId: customerId, page: 1, pageSize: 10, status: status);
+    return orders;
+  }
+
+  Widget buildOrderView(Order order) {
+    return InkWell(
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10), color: Colors.white),
+        margin: EdgeInsets.all(_screenWidth / 60),
+        padding: EdgeInsets.all(_screenWidth / 30),
+        child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: _screenWidth / 5,
+                child: Image.asset('images/icon_food.png'),
+              ),
+              SizedBox(
+                width: _screenWidth / 30,
+              ),
+              Column(
+                children: [
+                  Text(
+                    '${order.storeName}',
+                    style: GoogleFonts.openSans(
+                        fontSize: 16, fontWeight: FontWeight.w700),
+                  ),
+                  SizedBox(
+                    height: _screenWidth / 30,
+                  ),
+                  Text(
+                    '${order.orderDate}',
+                    style: GoogleFonts.openSans(),
+                  ),
+                ],
+              ),
+              SizedBox(
+                width: _screenWidth / 30,
+              ),
+              Text(
+                '${order.unitPrice}',
+                style: GoogleFonts.openSans(),
+              ),
+            ]),
+      ),
+      onTap: () {
+        // Navigate.navigate(, context);
+      },
+    );
+  }
+}
