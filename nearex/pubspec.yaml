@@ -56,6 +56,10 @@ dependencies:
   firebase_messaging: ^14.6.4
   flutter_local_notifications: ^14.1.1
   mime: ^1.0.4
+  flutter_zalopay_sdk: ^0.1.13
+  uuid: ^3.0.7
+  crypto: ^3.0.3
+  provider: ^6.0.5
 
 
   
@@ -107,6 +111,8 @@ flutter:
     - images/notificationbig.png
     - images/product.png
     - images/uploadimg.png
+    - images/icon_zalopay.png
+    - images/icon_food.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

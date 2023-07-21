@@ -1,30 +1,25 @@
 class Order {
-  int id;
+  int? id;
   DateTime orderDate;
-  DateTime shippedDate;
+  DateTime? shippedDate;
   int status;
   int quantity;
   int campaignId;
+  PaymentRequest? paymentRequest;
+  PaymentResponse? paymentResponse;
   // "productName": "string",
   // "unitPrice": 0,
   // "productImg": "string",
   // "storeName": "string",
-  // "payments": [
-  //   {
-  //     "id": 0,
-  //     "method": "string",
-  //     "status": 0,
-  //     "time": "2023-06-29T06:25:44.136Z",
-  //     "orderId": 0
-  //   }
-  // ]
   Order(
-      {required this.id,
+      {this.id,
       required this.orderDate,
-      required this.shippedDate,
+      this.shippedDate,
       required this.status,
       required this.quantity,
-      required this.campaignId});
+      required this.campaignId,
+      this.paymentRequest,
+      this.paymentResponse});
 
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
@@ -33,6 +28,42 @@ class Order {
         shippedDate: json['shippedDate'],
         status: json['status'],
         quantity: json['quantity'],
-        campaignId: json['campaignId']);
+        campaignId: json['campaignId'],
+        paymentRequest: json.containsKey('paymentRequest')
+            ? PaymentRequest.fromJson(json['paymentRequest'])
+            : null,
+        paymentResponse: json.containsKey('payments')
+            ? PaymentResponse.fromJson(json['payments'])
+            : null);
+  }
+}
+
+class PaymentRequest {
+  String paymentMethod;
+  DateTime paymentTime;
+  PaymentRequest({required this.paymentMethod, required this.paymentTime});
+  factory PaymentRequest.fromJson(Map<String, dynamic> json) {
+    return PaymentRequest(
+        paymentMethod: json['paymentMethod'],
+        paymentTime: DateTime.parse(json['paymentTime']));
+  }
+}
+
+class PaymentResponse {
+  int id;
+  String method;
+  int status;
+  DateTime time;
+  PaymentResponse(
+      {required this.id,
+      required this.method,
+      required this.status,
+      required this.time});
+  factory PaymentResponse.fromJson(Map<String, dynamic> json) {
+    return PaymentResponse(
+        id: json['id'],
+        method: json['method'],
+        status: json['status'],
+        time: json['time']);
   }
 }

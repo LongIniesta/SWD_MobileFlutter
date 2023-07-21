@@ -45,13 +45,12 @@ class _AdvantageIntroductionState extends State<AdvantageIntroduction> {
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         SizedBox(
           height: _screenHeight * 0.7,
-          child: ListView.separated(
-              controller: scrollController,
-              scrollDirection: Axis.horizontal,
-              itemCount: items.length,
-              itemBuilder: (context, index) =>
-                  buildItemView(item: items[index]),
-              separatorBuilder: (context, _) => const SizedBox(width: 12)),
+          child: ListView.builder(
+            controller: scrollController,
+            scrollDirection: Axis.horizontal,
+            itemCount: items.length,
+            itemBuilder: (context, index) => buildItemView(item: items[index]),
+          ),
         ),
         Center(
           child: Column(
@@ -129,7 +128,6 @@ class _AdvantageIntroductionState extends State<AdvantageIntroduction> {
       // navigate to register screen
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const MainScreen()));
-
       // navigate in animated way
       // Navigator.of(context).push(PageRouteBuilder(
       //   pageBuilder: (context, animation, secondaryAnimation) =>

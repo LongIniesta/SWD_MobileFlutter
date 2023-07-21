@@ -1,4 +1,3 @@
-import 'package:intl/intl.dart';
 import 'package:nearex/models/product.dart';
 
 class Campaign {
@@ -11,7 +10,6 @@ class Campaign {
   int quantity;
   int minQuantity;
   int discountPrice;
-  // List<CampaignDetails> campaignDetails;
   Campaign(
       {required this.id,
       required this.startDate,
@@ -21,23 +19,19 @@ class Campaign {
       required this.product,
       required this.quantity,
       required this.discountPrice,
-      required this.minQuantity
-      // required this.campaignDetails
-      });
+      required this.minQuantity});
   factory Campaign.fromJson(Map<String, dynamic> json) {
-    String dateFormat = "yyyy-MM-dd";
-    DateTime startDate = DateFormat(dateFormat).parse(json['startDate']);
-    DateTime endDate = DateFormat(dateFormat).parse(json['endDate']);
-    DateTime exp = DateFormat(dateFormat).parse(json['exp']);
-    double discountPrice = json['product']['price'] * 1000;
+    DateTime startDate = DateTime.parse(json['startDate']);
+    DateTime endDate = DateTime.parse(json['endDate']);
+    DateTime exp = DateTime.parse(json['exp']);
+    int discountPrice = json['product']['price'];
     int minQuantity = 1;
     var campaignDetailsJson = json['campaignDetails'];
     for (int i = campaignDetailsJson.length - 1; i >= 0; i--) {
       Map<String, dynamic> campaignDetailJson = campaignDetailsJson[i];
-      DateTime dateApply =
-          DateFormat(dateFormat).parse(campaignDetailJson['dateApply']);
-      if (dateApply.isAfter(DateTime.now())) {
-        discountPrice = campaignDetailJson['discount'] * 1000;
+      DateTime dateApply = DateTime.parse(campaignDetailJson['dateApply']);
+      if (dateApply.isBefore(DateTime.now())) {
+        discountPrice = campaignDetailJson['discount'];
         minQuantity = campaignDetailJson['minQuantity'];
         break;
       }
@@ -50,31 +44,29 @@ class Campaign {
         exp: exp,
         product: Product.fromJson(json['product']),
         quantity: json['quantity'],
-        discountPrice: discountPrice.toInt(),
-        minQuantity: minQuantity
-        // campaignDetails: CampaignDetails.fromJson(json['campaignDetails'])
-        );
+        discountPrice: discountPrice,
+        minQuantity: minQuantity);
   }
 }
 
-class CampaignDetails {
-  int id;
-  DateTime dateApply;
-  int percentDiscount;
-  int discount;
-  int minQuantity;
-  CampaignDetails(
-      {required this.id,
-      required this.dateApply,
-      required this.percentDiscount,
-      required this.discount,
-      required this.minQuantity});
-  factory CampaignDetails.fromJson(Map<String, dynamic> json) {
-    return CampaignDetails(
-        id: json['id'],
-        dateApply: json['dateApply'],
-        percentDiscount: json['percentDiscount'],
-        discount: json['discount'],
-        minQuantity: json['minQuantity']);
-  }
-}
+// class CampaignDetails {
+//   int id;
+//   DateTime dateApply;
+//   int percentDiscount;
+//   int discount;
+//   int minQuantity;
+//   CampaignDetails(
+//       {required this.id,
+//       required this.dateApply,
+//       required this.percentDiscount,
+//       required this.discount,
+//       required this.minQuantity});
+//   factory CampaignDetails.fromJson(Map<String, dynamic> json) {
+//     return CampaignDetails(
+//         id: json['id'],
+//         dateApply: json['dateApply'],
+//         percentDiscount: json['percentDiscount'],
+//         discount: json['discount'],
+//         minQuantity: json['minQuantity']);
+//   }
+// }

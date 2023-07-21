@@ -5,9 +5,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nearex/models/customer.dart';
+import 'package:nearex/services/customer_service.dart';
+import 'package:nearex/services/firebase_service.dart';
 import 'package:nearex/utils/common_widget.dart';
 import 'package:nearex/utils/data_storage.dart';
-import 'package:nearex/utils/firebase_api.dart';
 
 class CustomerProfile extends StatefulWidget {
   const CustomerProfile({super.key});
@@ -19,17 +20,18 @@ class CustomerProfile extends StatefulWidget {
 }
 
 class _CustomerProfileState extends State<CustomerProfile> {
-  Customer? customer;
+  var customer = CustomerService.customer;
   double _screenWidth = 0;
-  TextEditingController? _nameController;
-  TextEditingController? _emailController;
-  TextEditingController? _phoneNumberController;
-  TextEditingController? _addressController;
-  TextEditingController? _genderController;
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneNumberController;
+  late TextEditingController _addressController;
+  late TextEditingController _genderController;
 
   @override
   Widget build(BuildContext context) {
     _screenWidth = DimensionValue.getScreenWidth(context);
+    initTextController();
     return Scaffold(
       appBar: AppBar(
         title: Text('Thông tin cá nhân', style: GoogleFonts.outfit()),
@@ -45,7 +47,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   InkWell(
-                    onTap: _selectFile,
+                    onTap: _updateAvatar,
                     child: Image.asset(
                       'images/unknow.png',
                       scale: 1,
@@ -143,7 +145,14 @@ class _CustomerProfileState extends State<CustomerProfile> {
                       style: GoogleFonts.openSans(
                           fontWeight: FontWeight.bold, fontSize: 16)),
                   SizedBox(height: _screenWidth / 20),
-                  //drop down
+                  DropdownButton(
+                    items: [
+                      DropdownMenuItem(child: Text('Nam')),
+                      DropdownMenuItem(child: Text('Nữ')),
+                      DropdownMenuItem(child: Text('Không rõ'))
+                    ],
+                    onChanged: (value) {},
+                  ),
                   TextField(
                     controller: _genderController,
                     decoration: InputDecoration(
@@ -153,6 +162,8 @@ class _CustomerProfileState extends State<CustomerProfile> {
                         hintText: 'Nguyễn Văn A',
                         hintStyle: GoogleFonts.montserrat(fontSize: 14)),
                   ),
+                  ElevatedButton(onPressed: () {}, child: Text('Cập nhật')),
+                  ElevatedButton(onPressed: () {}, child: Text('Đổi mật khẩu'))
                 ],
               ))
             ],
@@ -194,7 +205,7 @@ class _CustomerProfileState extends State<CustomerProfile> {
     _genderController = TextEditingController(text: customer?.gender);
   }
 
-  void _selectFile() async {
+  void _updateAvatar() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.image);
     if (result == null) {
       return;
@@ -202,13 +213,28 @@ class _CustomerProfileState extends State<CustomerProfile> {
     PlatformFile platformFile = result.files.first;
     File file = File(platformFile.path!);
     // String fileName = 'avatar-$customerId';
-    FirebaseStorageService.uploadFile(
+    var filePath = await FirebaseStorageService.uploadFile(
         file: file,
         fileName: 'avatar-9',
         fileDirectory: FirebaseStorageService.imageDirectory);
+    CustomerService.updateCustomer(
+        customerId: CustomerService.customer!.id, avatar: filePath);
   }
 
   void _update() {
-    // _emailController.text;
+    CustomerService.updateCustomer(
+        customerId: customer!.id,
+        email: _emailController.text != customer!.email
+            ? _emailController.text
+            : null,
+        userName: _nameController.text != customer!.userName
+            ? _nameController.text
+            : null,
+        phone: _phoneNumberController.text != customer!.phone
+            ? _phoneNumberController.text
+            : null,
+        address: _addressController.text != customer!.address
+            ? _addressController.text
+            : null);
   }
 }

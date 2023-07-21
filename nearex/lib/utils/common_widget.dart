@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class ColorBackground {
-  static const Color bubbles = Color.fromARGB(255, 249, 249, 249);
+  static const Color backgroundColor1 = Color.fromARGB(255, 249, 249, 249);
   static const Color blueberry = Color.fromARGB(255, 83, 127, 231);
   static const Color diamond = Color.fromARGB(255, 192, 238, 242);
-  static const Color eerieBlack = Color.fromARGB(255, 24, 24, 35);
+  static const Color textColor1 = Color.fromARGB(255, 24, 24, 35);
 
   static const LinearGradient lightBlueGradient = LinearGradient(
-      colors: [diamond, bubbles],
+      colors: [diamond, backgroundColor1],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight);
 

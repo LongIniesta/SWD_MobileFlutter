@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:nearex/customer/customer_campaign_purchase.dart';
 import 'package:nearex/models/campaign.dart';
-import 'package:nearex/services/order_service.dart';
 import 'package:nearex/utils/common_widget.dart';
 
 class CustomerCampaignDetails extends StatefulWidget {
@@ -34,12 +35,13 @@ class _CustomerCampaignDetailsState extends State<CustomerCampaignDetails> {
         future: _getCampaign(),
         builder: (context, snapshot) => SingleChildScrollView(
           child: Container(
-            margin: EdgeInsets.all(_screenWidth / 24),
+            margin: EdgeInsets.all(_screenWidth / 18),
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Image.network(_campaign!.product.productImg),
+                  Image.network(_campaign!.product.productImg),
+                  SizedBox(height: _screenWidth / 30),
                   Text(
                     _campaign!.product.productName,
                     style: GoogleFonts.openSans(
@@ -48,29 +50,63 @@ class _CustomerCampaignDetailsState extends State<CustomerCampaignDetails> {
                   ),
                   SizedBox(height: _screenWidth / 30),
                   Text(
-                    '${_campaign!.product.price}',
-                    style: GoogleFonts.outfit(
-                        fontSize: 16,
-                        color: ColorBackground.bubbles,
-                        fontWeight: FontWeight.w700),
-                  ),
-                  Text(
-                    '${_campaign!.discountPrice}',
+                    '${_campaign!.discountPrice} VND',
                     style: GoogleFonts.outfit(
                         fontSize: 20,
                         color: ColorBackground.blueberry,
+                        fontWeight: FontWeight.w700),
+                  ),
+                  Text(
+                    '${_campaign!.product.price} VND',
+                    style: GoogleFonts.outfit(
+                        fontSize: 16,
+                        color: ColorBackground.textColor1,
                         fontWeight: FontWeight.w700,
                         decoration: TextDecoration.lineThrough),
                   ),
                   SizedBox(height: _screenWidth / 30),
                   Text(
-                      'Chương trình áp dụng từ: ${_campaign!.startDate} - ${_campaign!.endDate}'),
-                  Text('Hạn sử dụng sản phẩm: ${_campaign!.startDate}'),
+                    'Chương trình áp dụng từ:',
+                    style: GoogleFonts.openSans(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: _screenWidth / 60),
+                  Text(
+                    '${DateFormat('dd/MM/yyyy').format(_campaign!.startDate)} - ${DateFormat('dd/MM/yyyy').format(_campaign!.endDate)}',
+                    style: GoogleFonts.openSans(),
+                  ),
+                  SizedBox(height: _screenWidth / 30),
+                  Text(
+                    'Hạn sử dụng sản phẩm:',
+                    style: GoogleFonts.openSans(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: _screenWidth / 60),
+                  Text(
+                    '${DateFormat('dd/MM/yyyy').format(_campaign!.startDate)}',
+                    style: GoogleFonts.openSans(),
+                  ),
+                  SizedBox(height: _screenWidth / 30),
                   Text('Đơn vị bán: ${_campaign!.product.unit}'),
+                  SizedBox(height: _screenWidth / 30),
                   Text(
                       'Số lượng ít nhất để đặt mua: ${_campaign!.minQuantity}'),
-                  Text('Mô tả sản phẩm: ${_campaign!.product.description}'),
-                  Text('Sản xuất tại: ${_campaign!.product.origin}'),
+                  SizedBox(height: _screenWidth / 30),
+                  Text(
+                    'Mô tả sản phẩm:',
+                    style: GoogleFonts.openSans(
+                        fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: _screenWidth / 60),
+                  Text(_campaign!.product.description,
+                      style: GoogleFonts.openSans()),
+                  SizedBox(height: _screenWidth / 30),
+                  Text('Sản xuất tại:',
+                      style: GoogleFonts.openSans(
+                          fontSize: 16, fontWeight: FontWeight.bold)),
+                  SizedBox(height: _screenWidth / 60),
+                  Text('${_campaign!.product.origin}',
+                      style: GoogleFonts.openSans())
                 ]),
           ),
         ),
@@ -97,7 +133,10 @@ class _CustomerCampaignDetailsState extends State<CustomerCampaignDetails> {
             icon: Icon(Icons.add_circle_outline)),
         TextButton(
             onPressed: () {
-              OrderService.saveOrder(_quantity, _campaign!.id, 1);
+              Navigate.navigate(
+                  CustomerCampaignPurchase(
+                      campaign: _campaign, quantity: _quantity),
+                  context);
             },
             child: const Text("Đặt mua"))
       ],

@@ -16,12 +16,9 @@ class _CustomerNotificationState extends State<CustomerNotification> {
     final message = ModalRoute.of(context)!.settings.arguments;
     return Scaffold(
       appBar: AppBar(
-          title: Row(
-        children: [
-          Text('Thông báo',
-              style: GoogleFonts.openSans(
-                  fontWeight: FontWeight.bold, fontSize: 20))
-        ],
+          title: Text(
+        'Thông báo',
+        style: GoogleFonts.openSans(fontWeight: FontWeight.bold, fontSize: 20),
       )),
       body: Container(
         margin: EdgeInsets.all(12),

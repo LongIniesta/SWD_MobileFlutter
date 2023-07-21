@@ -4,9 +4,23 @@ import 'package:http/http.dart';
 import 'package:nearex/models/campaign.dart';
 
 class CampaignService {
-  static Future<List<Campaign>> _getCampaigns(
-      Map<String, String>? parameters) async {
+  static Future<List<Campaign>> getCampaigns(
+      {int? page,
+      int? pageSize,
+      DateTime? exp,
+      DateTime? startDate,
+      int? productId,
+      String? productName,
+      int? status}) async {
     List<Campaign> campaigns = [];
+    Map<String, String> parameters = {};
+    if (page != null) parameters['Page'] = page.toString();
+    if (pageSize != null) parameters['PageSize'] = pageSize.toString();
+    if (startDate != null) parameters['StartDate'] = startDate.toString();
+    if (status != null) parameters['Status'] = status.toString();
+    if (exp != null) parameters['Exp'] = exp.toString();
+    if (productId != null) parameters['ProductId'] = productId.toString();
+    if (productName != null) parameters['ProductName'] = productName;
     Uri uri =
         Uri.https('swd-nearex.azurewebsites.net', '/api/campaigns', parameters);
     Response response = await get(uri);
@@ -19,32 +33,12 @@ class CampaignService {
     return campaigns;
   }
 
-  static Future<List<Campaign>> getCampaigns(int page, int pageSize) async {
-    Map<String, String> parameters = {
-      "Page": page.toString(),
-      'PageSize': pageSize.toString()
-    };
-    return _getCampaigns(parameters);
-  }
-
-  static Future<List<Campaign>> getCampaignsByEndDate(
-      int page, int pageSize, DateTime endDate) async {
-    Map<String, String> parameters = {
-      "Page": page.toString(),
-      'PageSize': pageSize.toString(),
-      'EndDate': endDate.toString()
-    };
-    return _getCampaigns(parameters);
-  }
-
   static Future<List<Campaign>> getCampaignsByCategory(
-      int page, int pageSize, int categoryId) async {
+      {int? page, int? pageSize, required int categoryId}) async {
     List<Campaign> campaigns = [];
-    Map<String, String> parameters = {
-      "Page": page.toString(),
-      'PageSize': pageSize.toString(),
-      'cateId': categoryId.toString()
-    };
+    Map<String, String> parameters = {'cateId': categoryId.toString()};
+    if (page != null) parameters['Page'] = page.toString();
+    if (pageSize != null) parameters['PageSize'] = pageSize.toString();
     Uri uri = Uri.https(
         'swd-nearex.azurewebsites.net', '/api/campaigns/cate', parameters);
     Response response = await get(uri);

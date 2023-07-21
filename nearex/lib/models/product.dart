@@ -1,4 +1,5 @@
 import 'package:nearex/models/category.dart';
+import 'package:nearex/models/store.dart';
 
 class Product {
   int id;
@@ -10,6 +11,7 @@ class Product {
   String unit;
   int netWeight;
   Category? category;
+  Store store;
 
   // "storeId": 3,
   // "code": "10617961",
@@ -33,18 +35,19 @@ class Product {
       required this.productName,
       required this.description,
       required this.unit,
-      required this.netWeight});
+      required this.netWeight,
+      required this.store});
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    double price = json['price'] * 1000;
     return Product(
         id: json['id'],
-        price: price.toInt(),
+        price: json['price'],
         origin: json['origin'],
         productImg: json['productImg'],
         productName: json['productName'],
         description: json['description'],
         unit: json['unit'],
-        netWeight: json['netWeight']);
+        netWeight: json['netWeight'],
+        store: Store.fromJson(json['store']));
   }
 }

@@ -1,9 +1,9 @@
 class Customer {
   final int id;
-  final String email;
-  final String password;
-  final String userName;
-  String phone;
+  final String? email;
+  final String? password;
+  final String? userName;
+  String? phone;
   String? gender;
   DateTime? dateOfBirth;
   String? address;
@@ -40,7 +40,7 @@ class Customer {
         userName: json['userName'],
         phone: json['phone'],
         gender: json['gender'],
-        dateOfBirth: json['dateOfBirth'],
+        dateOfBirth: DateTime.parse(json['dateOfBirth']),
         address: json['address'],
         avatar: json['avatar'],
         fcmToken: json['fcmtoken'],

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -5,9 +7,13 @@ import 'package:nearex/customer/customer_campaign_details.dart';
 import 'package:nearex/customer/customer_notification.dart';
 import 'package:nearex/models/campaign.dart';
 import 'package:nearex/models/category.dart';
-import 'package:nearex/models/product.dart';
+import 'package:nearex/models/customer.dart';
 import 'package:nearex/models/store.dart';
+import 'package:nearex/services/campaign_service.dart';
+import 'package:nearex/services/category_service.dart';
+import 'package:nearex/services/store_service.dart';
 import 'package:nearex/utils/common_widget.dart';
+import 'package:nearex/utils/data_storage.dart';
 
 class HomeCustomer extends StatefulWidget {
   const HomeCustomer({super.key});
@@ -24,9 +30,20 @@ class _HomeCustomerState extends State<HomeCustomer> {
   double _screenWidth = 0;
   double _screenHeight = 0;
   int _selectedCategory = 0;
+  int _pageSize = 20;
+  bool _isSearch = false;
+  TextEditingController _searchKeyController = TextEditingController();
+  late ScrollController _scrollController;
   List<Store> stores = [];
   List<Category> categories = [];
   List<Campaign> campaigns = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +52,10 @@ class _HomeCustomerState extends State<HomeCustomer> {
     return Container(
         margin: EdgeInsets.all(_screenWidth / 24),
         // decoration: const BoxDecoration(color: ColorBackground.bubbles),
-        child: CustomScrollView(slivers: [
+        child: CustomScrollView(controller: _scrollController, slivers: [
+          // Consumer(builder: (context, value, child) {
+
+          // },),
           SliverToBoxAdapter(
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -71,21 +91,28 @@ class _HomeCustomerState extends State<HomeCustomer> {
                             child: Column(
                           children: [
                             TextFormField(
-                              decoration:
-                                  InputDecoration(hintText: 'Tìm tên sản phẩm'),
-                              textInputAction: TextInputAction.search,
+                              controller: _searchKeyController,
+                              decoration: const InputDecoration(
+                                  hintText: 'Tìm tên sản phẩm',
+                                  prefixIcon: Icon(Icons.search)),
+                              // textInputAction: TextInputAction.search,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Vui lòng nhập tên sản phẩm';
                                 }
                                 return null;
                               },
+                              onFieldSubmitted: (value) => {
+                                // setState(() {
+                                //   _isSearch = true;
+                                // })
+                              },
                             ),
                           ],
                         ))),
                     Container(
                       decoration: BoxDecoration(
-                          color: ColorBackground.eerieBlack,
+                          color: ColorBackground.textColor1,
                           borderRadius: BorderRadius.circular(5)),
                       child: IconButton(
                         onPressed: () {},
@@ -100,20 +127,21 @@ class _HomeCustomerState extends State<HomeCustomer> {
                 SizedBox(
                   height: _screenWidth / 15,
                 ),
-                FutureBuilder(
-                  future: fetchDataFirstTimeCall(),
-                  builder: (context, snapshot) => SizedBox(
-                    height: _screenHeight / 22,
-                    child: ListView.separated(
-                      itemBuilder: (context, index) =>
-                          buildCategoryView(categories[index]),
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(width: 12),
-                      itemCount: categories.length,
-                      scrollDirection: Axis.horizontal,
+                if (!_isSearch)
+                  FutureBuilder(
+                    future: fetchDataFirstTimeCall(),
+                    builder: (context, snapshot) => SizedBox(
+                      height: _screenHeight / 22,
+                      child: ListView.separated(
+                        itemBuilder: (context, index) =>
+                            buildCategoryView(categories[index]),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(width: 12),
+                        itemCount: categories.length,
+                        scrollDirection: Axis.horizontal,
+                      ),
                     ),
                   ),
-                ),
                 SizedBox(
                   height: _screenWidth / 15,
                 ),
@@ -180,10 +208,10 @@ class _HomeCustomerState extends State<HomeCustomer> {
           builder: (context, snapshot) => SliverGrid(
               delegate: SliverChildBuilderDelegate((context, index) {
                 return buildCampaignView(campaigns[index]);
-              }, childCount: campaigns.length),
+              }),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2)),
-        )
+                  crossAxisCount: 2, childAspectRatio: 0.75)),
+        ),
       ];
     } else {
       return [
@@ -191,10 +219,9 @@ class _HomeCustomerState extends State<HomeCustomer> {
             future: fetchCampaignData(),
             builder: (context, snapshot) => SliverGrid(
                 delegate: SliverChildBuilderDelegate(
-                    (context, index) => buildCampaignView(campaigns[index]),
-                    childCount: campaigns.length),
+                    (context, index) => buildCampaignView(campaigns[index])),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2)))
+                    crossAxisCount: 2, childAspectRatio: 0.1)))
       ];
     }
   }
@@ -238,234 +265,169 @@ class _HomeCustomerState extends State<HomeCustomer> {
   Widget buildCampaignView(Campaign campaign) {
     return InkWell(
       child: Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-        width: _screenWidth * 0.4,
-        child: Column(children: [
+        height: _screenHeight / 2,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10), color: Colors.white),
+        margin: EdgeInsets.all(_screenWidth / 60),
+        padding: EdgeInsets.all(_screenWidth / 30),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           SizedBox(
             width: _screenWidth / 3.3,
             child: Image.network(campaign.product.productImg),
           ),
-          Text(campaign.product.productName)
+          SizedBox(
+            height: _screenWidth / 30,
+          ),
+          Text(
+            campaign.product.productName,
+            style: GoogleFonts.openSans(
+                color: ColorBackground.blueberry, fontWeight: FontWeight.w700),
+          ),
+          SizedBox(
+            height: _screenWidth / 30,
+          ),
+          Text(
+            '${campaign.discountPrice} VND',
+            style: GoogleFonts.outfit(
+                color: ColorBackground.blueberry, fontWeight: FontWeight.w700),
+          ),
+          SizedBox(
+            height: _screenWidth / 30,
+          ),
+          Text(
+            '${campaign.product.price} VND',
+            style: GoogleFonts.outfit(
+                color: ColorBackground.textColor1,
+                fontWeight: FontWeight.w700,
+                decoration: TextDecoration.lineThrough),
+          ),
         ]),
       ),
       onTap: () {
         Navigate.navigate(CustomerCampaignDetails(campaign: campaign), context);
-        // CustomerCampaignDetails(campaignId: campaign.id), context);
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //     SnackBar(content: Text("Tap on campaign id: ${campaign.id}")));
       },
     );
   }
 
   Future<List<Category>> fetchDataFirstTimeCall() async {
-    // if (_timeCall == 0) {
-    //   String? customerJson =
-    //       await DataStorage.secureStorage.read(key: 'customer');
-    //   if (customerJson != null) {
-    //     _customerName = Customer.fromJson(jsonDecode(customerJson)).userName;
-    //   }
-    //   categories.add(Category(id: 0, name: 'Tất cả'));
-    //   categories.addAll(await CategoryService.getCategories());
-    //   _timeCall = 1;
-    // }
-
-    categories = [
-      Category(id: 0, name: 'Tất cả'),
-      Category(id: 1, name: 'Thịt cá'),
-      Category(id: 2, name: 'Rau củ'),
-      Category(id: 3, name: 'Hoa quả'),
-      Category(id: 4, name: 'Đồ uống'),
-      Category(id: 5, name: 'Thực phẩm ăn liền'),
-      Category(id: 6, name: 'Thực phẩm khô'),
-      Category(id: 7, name: 'Bánh kẹo'),
-      Category(id: 8, name: 'Sữa'),
-      Category(id: 9, name: 'Hải sản'),
-    ];
+    if (_timeCall == 0) {
+      String? customerJson =
+          await DataStorage.secureStorage.read(key: 'customer');
+      if (customerJson != null) {
+        _customerName = Customer.fromJson(jsonDecode(customerJson)).userName;
+      }
+      categories.add(Category(id: 0, name: 'Tất cả'));
+      categories.addAll(await CategoryService.getCategories());
+      _timeCall = 1;
+    }
     return categories;
   }
 
   Future<List<Campaign>> fetchCampaignData() async {
-    // if (_selectedCategory == 0) {
-    //   campaigns = await CampaignService.getCampaigns(1, 20);
-    //   // await CampaignService.getCampaignsByEndDate(1, 20, DateTime.now());
-    //   return campaigns;
-    // } else {
-    //   campaigns = await CampaignService.getCampaignsByCategory(
-    //       1, 20, _selectedCategory);
-    //   return campaigns;
-    // }
-
-    campaigns = [
-      Campaign(
-          id: 1,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg:
-                  'https://img.freepik.com/free-vector/white-product-podium-with-green-tropical-palm-leaves-golden-round-arch-green-wall_87521-3023.jpg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100,
-          discountPrice: 50000,
-          minQuantity: 1),
-      Campaign(
-          id: 2,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg:
-                  'https://img.freepik.com/free-vector/white-product-podium-with-green-tropical-palm-leaves-golden-round-arch-green-wall_87521-3023.jpg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100,
-          discountPrice: 50000,
-          minQuantity: 1),
-      Campaign(
-          id: 3,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg:
-                  'https://img.freepik.com/free-vector/white-product-podium-with-green-tropical-palm-leaves-golden-round-arch-green-wall_87521-3023.jpg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100,
-          discountPrice: 50000,
-          minQuantity: 1),
-      Campaign(
-          id: 4,
-          startDate: DateTime(2023, 6, 30),
-          endDate: DateTime(2023, 7, 31),
-          status: 0,
-          exp: DateTime(2023, 8, 31),
-          product: Product(
-              id: 0,
-              price: 100000,
-              origin: 'origin',
-              productImg:
-                  'https://img.freepik.com/free-vector/white-product-podium-with-green-tropical-palm-leaves-golden-round-arch-green-wall_87521-3023.jpg',
-              productName: 'productName',
-              description: 'description',
-              unit: 'gam',
-              netWeight: 680),
-          quantity: 100,
-          discountPrice: 50000,
-          minQuantity: 1),
-    ];
-    return campaigns;
+    if (_selectedCategory == 0) {
+      campaigns = await CampaignService.getCampaigns(
+          page: 1, pageSize: 20, startDate: DateTime.now());
+      return campaigns;
+    } else {
+      campaigns = await CampaignService.getCampaignsByCategory(
+          categoryId: _selectedCategory);
+      return campaigns;
+    }
   }
 
   Future<List<Store>> fetchStoreData() async {
-    // stores = await StoreService.getStores(1, 5);
+    stores = await StoreService.getStores(1, 5);
 
-    stores = [
-      Store(
-          id: 0,
-          storeName: 'storeName',
-          phone: 'phone',
-          address: 'address',
-          logo: 'logo',
-          token: 'token',
-          coordinateString: 'coordinateString'),
-      Store(
-          id: 1,
-          storeName: 'storeName',
-          phone: 'phone',
-          address: 'address',
-          logo: 'logo',
-          token: 'token',
-          coordinateString: 'coordinateString'),
-      Store(
-          id: 2,
-          storeName: 'storeName',
-          phone: 'phone',
-          address: 'address',
-          logo: 'logo',
-          token: 'token',
-          coordinateString: 'coordinateString'),
-      Store(
-          id: 3,
-          storeName: 'storeName',
-          phone: 'phone',
-          address: 'address',
-          logo: 'logo',
-          token: 'token',
-          coordinateString: 'coordinateString'),
-      Store(
-          id: 4,
-          storeName: 'storeName',
-          phone: 'phone',
-          address: 'address',
-          logo: 'logo',
-          token: 'token',
-          coordinateString: 'coordinateString'),
-      Store(
-          id: 5,
-          storeName: 'storeName',
-          phone: 'phone',
-          address: 'address',
-          logo: 'logo',
-          token: 'token',
-          coordinateString: 'coordinateString'),
-      Store(
-          id: 6,
-          storeName: 'storeName',
-          phone: 'phone',
-          address: 'address',
-          logo: 'logo',
-          token: 'token',
-          coordinateString: 'coordinateString'),
-      Store(
-          id: 7,
-          storeName: 'storeName',
-          phone: 'phone',
-          address: 'address',
-          logo: 'logo',
-          token: 'token',
-          coordinateString: 'coordinateString'),
-      Store(
-          id: 8,
-          storeName: 'storeName',
-          phone: 'phone',
-          address: 'address',
-          logo: 'logo',
-          token: 'token',
-          coordinateString: 'coordinateString'),
-      Store(
-          id: 9,
-          storeName: 'storeName',
-          phone: 'phone',
-          address: 'address',
-          logo: 'logo',
-          token: 'token',
-          coordinateString: 'coordinateString'),
-    ];
+    // stores = [
+    //   Store(
+    //       id: 0,
+    //       storeName: 'storeName',
+    //       phone: 'phone',
+    //       address: 'address',
+    //       logo: 'logo',
+    //       token: 'token',
+    //       coordinateString: 'coordinateString'),
+    //   Store(
+    //       id: 1,
+    //       storeName: 'storeName',
+    //       phone: 'phone',
+    //       address: 'address',
+    //       logo: 'logo',
+    //       token: 'token',
+    //       coordinateString: 'coordinateString'),
+    //   Store(
+    //       id: 2,
+    //       storeName: 'storeName',
+    //       phone: 'phone',
+    //       address: 'address',
+    //       logo: 'logo',
+    //       token: 'token',
+    //       coordinateString: 'coordinateString'),
+    //   Store(
+    //       id: 3,
+    //       storeName: 'storeName',
+    //       phone: 'phone',
+    //       address: 'address',
+    //       logo: 'logo',
+    //       token: 'token',
+    //       coordinateString: 'coordinateString'),
+    //   Store(
+    //       id: 4,
+    //       storeName: 'storeName',
+    //       phone: 'phone',
+    //       address: 'address',
+    //       logo: 'logo',
+    //       token: 'token',
+    //       coordinateString: 'coordinateString'),
+    //   Store(
+    //       id: 5,
+    //       storeName: 'storeName',
+    //       phone: 'phone',
+    //       address: 'address',
+    //       logo: 'logo',
+    //       token: 'token',
+    //       coordinateString: 'coordinateString'),
+    //   Store(
+    //       id: 6,
+    //       storeName: 'storeName',
+    //       phone: 'phone',
+    //       address: 'address',
+    //       logo: 'logo',
+    //       token: 'token',
+    //       coordinateString: 'coordinateString'),
+    //   Store(
+    //       id: 7,
+    //       storeName: 'storeName',
+    //       phone: 'phone',
+    //       address: 'address',
+    //       logo: 'logo',
+    //       token: 'token',
+    //       coordinateString: 'coordinateString'),
+    //   Store(
+    //       id: 8,
+    //       storeName: 'storeName',
+    //       phone: 'phone',
+    //       address: 'address',
+    //       logo: 'logo',
+    //       token: 'token',
+    //       coordinateString: 'coordinateString'),
+    //   Store(
+    //       id: 9,
+    //       storeName: 'storeName',
+    //       phone: 'phone',
+    //       address: 'address',
+    //       logo: 'logo',
+    //       token: 'token',
+    //       coordinateString: 'coordinateString'),
+    // ];
     return stores;
   }
 
-  @override
-  void initState() {
-    super.initState();
+  void _scrollListener() {
+    if (_scrollController.offset >=
+            _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+      // reach the bottom
+    }
   }
 }

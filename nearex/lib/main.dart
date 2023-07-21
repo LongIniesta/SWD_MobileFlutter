@@ -9,7 +9,7 @@ void main() async {
   await Firebase.initializeApp();
   // runApp(StoreScreen());
   runApp(const MainCustomer());
-  // if (await DataStorage.storage.containsKey(key: 'customer')) {
+  // if (await DataStorage.secureStorage.containsKey(key: 'customer')) {
   //   runApp(const MainCustomer());
   // } else {
   //   runApp(
