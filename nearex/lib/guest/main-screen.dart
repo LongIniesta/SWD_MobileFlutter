@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -216,12 +215,12 @@ class MainScreenState extends State<MainScreen> {
   }
 
   Future<void> sendOTP(String phone) async {
-    var url =
-        Uri.parse('https://swd-nearex.azurewebsites.net/api/user/verification');
+    var url = Uri.parse(
+        'https://swd-nearex.azurewebsites.net/api/users/verification');
     Map<String, dynamic> body = {
-      "accountSID": "ACa0a4721029b596347de0283f4b3555d0",
-      "authToken": "c4510c96630803358ffdffbf65e9687f",
-      "pathServiceSid": "VAb11a77d8162e6b4df66d046680522c69",
+      "accountSID": "ACa148099f78a32444bf88e1389c4d3553",
+      "authToken": "41f9c0ff228dfe8115776f50f6baefa8",
+      "pathServiceSid": "VA35e3afc45b1a5378ffaffd863fa83c7f",
       "phone": "$phone",
       "token": null
     };
@@ -251,6 +250,7 @@ class MainScreenState extends State<MainScreen> {
   }
 
   Future<void> checkPhone(String phone) async {
+    
     setState(() {
       if (phone == '') {
         error = 'Vui lòng nhập số điện thoại';
@@ -260,15 +260,13 @@ class MainScreenState extends State<MainScreen> {
         error = '';
       }
     });
-
-    print('phone:' + phone);
-
     if (error == '') {
       setState(() {
         inProcessing = true;
       });
+
       var url = Uri.parse(
-          'https://swd-nearex.azurewebsites.net/api/user/verification?phone=$phone');
+          'https://swd-nearex.azurewebsites.net/api/users/verification?phone=$phone');
       Map<String, dynamic> body = {
         "accountSID": "",
         "authToken": "",
@@ -283,9 +281,10 @@ class MainScreenState extends State<MainScreen> {
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(body),
         );
-
+        
         if (response.statusCode == 200) {
-          if (response.body == 'false') {
+          print(response.body.toString());
+          if (response.body == 'false') { 
             await sendOTP(phone);
           } else {
             saveCustomerState(response.body);
@@ -297,7 +296,7 @@ class MainScreenState extends State<MainScreen> {
           }
         } else {
           // Request thất bại, xử lý lỗi
-          print('Request failed with status code: ${response.body}');
+          print('Request failed with status code: ${response.statusCode.toString()}');
         }
       } catch (e) {
         // Xử lý lỗi khi gửi request
@@ -317,6 +316,7 @@ class MainScreenState extends State<MainScreen> {
     final GoogleSignInAuthentication? googleAuth =
         await googleUser?.authentication;
 
+    
     // Create a new credential
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth?.accessToken,
@@ -330,7 +330,7 @@ class MainScreenState extends State<MainScreen> {
       inProcessing = true;
     });
     var url = Uri.parse(
-        'https://swd-nearex.azurewebsites.net/api/user/verification?googleId=$googleId');
+        'https://swd-nearex.azurewebsites.net/api/users/verification?googleId=$googleId');
     Map<String, dynamic> body = {
       "accountSID": "",
       "authToken": "",

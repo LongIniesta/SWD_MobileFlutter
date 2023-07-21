@@ -1,21 +1,63 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:nearex/customer/customer_main.dart';
+import 'package:nearex/firebase_options.dart';
+import 'package:nearex/model/store.dart';
+import 'package:nearex/store/homestore.dart';
+import 'customer/customer_main.dart';
+import 'guest/app_intro.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+void initializeFirebaseMessaging() {
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('Received message: ${message.notification!.title}');
+  });
+
 
 final navigatorKey = GlobalKey<NavigatorState>();
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    print('Opened app from notification: ${message.notification!.title}');
+  });
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  // runApp(StoreScreen());
-  runApp(const MainCustomer());
-  // if (await DataStorage.secureStorage.containsKey(key: 'customer')) {
-  //   runApp(const MainCustomer());
-  // } else {
-  //   runApp(
-  //     const MaterialApp(home: AppIntro()),
-  //   );
-  // }
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  NotificationSettings settings = await _firebaseMessaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  ); 
+  print(settings.authorizationStatus);
+  initializeFirebaseMessaging();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? value = prefs.getString('Loginwith');
+  print('loginwith: $value');
+  if (value != null && value == 'Store') {
+    String? value = prefs.getString('Store');
+    Store store = parseJson(value!);
+    runApp(StoreScreen(
+      store: store,
+    ));
+  } else {
+    runApp(
+      const MaterialApp(
+        title: 'NearEx',
+        home: Scaffold(
+          backgroundColor: const Color.fromARGB(255, 87, 0, 63),
+          body: Center(
+            child: AppStart(),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 

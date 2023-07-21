@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:nearex/models/store.dart';
+import 'package:nearex/model/store.dart';
+
+
 
 class LoginStore extends StatefulWidget {
   const LoginStore({super.key});
@@ -211,7 +213,7 @@ class LoginStoreState extends State<LoginStore> {
         inProcessing = true;
       });
       var url =
-          Uri.parse('https://swd-nearex.azurewebsites.net/api/store/login');
+          Uri.parse('https://swd-nearex.azurewebsites.net/api/stores/authentication');
       Map<String, dynamic> body = {
         "phone": "$phoneNumber",
         "password": "$password"
@@ -223,16 +225,18 @@ class LoginStoreState extends State<LoginStore> {
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(body),
         );
-
+        
         if (response.statusCode == 200) {
-          Store store = parseJson(response.body);
-          print(store.address);
+         Store store = parseJson(response.body);
+         print(store.address);
         } else {
+          print(response.statusCode.toString());
           setState(() {
             error = 'Sai sđt hoặc mật khẩu';
           });
         }
       } catch (e) {
+        print('loi call');
         setState(() {
           error = 'Sai sđt hoặc mật khẩu';
         });
@@ -243,4 +247,6 @@ class LoginStoreState extends State<LoginStore> {
       });
     }
   }
+  
+
 }

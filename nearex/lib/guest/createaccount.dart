@@ -10,6 +10,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:nearex/guest/main-screen.dart';
 import 'package:nearex/place/mapscreen.dart';
 
 class CreateAccount extends StatefulWidget {
@@ -535,15 +536,16 @@ class CreateAccountState extends State<CreateAccount> {
   }
 
   Future uploadImage() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp();
-    FirebaseAuth mAuth = FirebaseAuth.instance;
+    // WidgetsFlutterBinding.ensureInitialized();
+    // await Firebase.initializeApp();
+    // FirebaseAuth mAuth = FirebaseAuth.instance;
 
-    if (mAuth.currentUser != null) {
-      // do your stuff
-    } else {
-      mAuth.signInAnonymously();
-    }
+    // if (mAuth.currentUser != null) {
+    //   // do your stuff
+    // } else {
+    //  await mAuth.signInAnonymously();
+    // }
+
     final path = 'avts/${pickFile!.name}';
     final file = File(pickFile!.path!);
     final ref = FirebaseStorage.instance.ref().child(path);
@@ -557,7 +559,8 @@ class CreateAccountState extends State<CreateAccount> {
   }
 
   Future<void> createAcc() async {
-    var url = Uri.parse('https://swd-nearex.azurewebsites.net/api/user/create');
+    var url = Uri.parse('https://swd-nearex.azurewebsites.net/api/users/create');
+    
     String googleId = '';
     if (googleUser != null) {
       googleId = googleUser!.id;
@@ -592,6 +595,11 @@ class CreateAccountState extends State<CreateAccount> {
       if (response.statusCode == 200) {
         // Request thành công, xử lý response
         print('Response body: ${response.body}');
+        // ignore: use_build_context_synchronously
+        Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>MainScreen()));
       } else {
         // Request thất bại, xử lý lỗi
         print('Request failed with status code: ${response.body}');

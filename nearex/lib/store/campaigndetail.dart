@@ -1,17 +1,43 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:nearex/model/campaign.dart';
 import 'package:nearex/store/editcampaign.dart';
 
-class DetailCampaignScreen extends StatefulWidget {
-  const DetailCampaignScreen({super.key});
+import '../model/campaigndetail.dart';
+import '../model/store.dart';
 
+class DetailCampaignScreen extends StatefulWidget {
+  DetailCampaignScreen({super.key, required this.campaign, required this.store});
+  Campaign campaign;
+  Store store;
   @override
   State<StatefulWidget> createState() {
-    return DetailCampaignScreenState();
+    return DetailCampaignScreenState(campaign, store);
   }
 }
 
 class DetailCampaignScreenState extends State<DetailCampaignScreen> {
+  DetailCampaignScreenState( this.cam, this.store);
+  Store store;
+  Campaign cam;
+  CampaignDetail? camDetail;
+  @override
+  void initState() {
+    cam.listCampaignDetail!.forEach((camdt){
+      if (camdt.dateApply!.isBefore(DateTime.now())){
+        camDetail = camdt;
+      }
+    });
+
+    if (camDetail == null){
+      camDetail = cam.listCampaignDetail!.first;
+    }
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,17 +45,30 @@ class DetailCampaignScreenState extends State<DetailCampaignScreen> {
         child: Container(
           child: Stack(
             children: [
-              Align(
-                alignment: Alignment.topCenter,
-                child: Container(
-                  width: double.maxFinite,
-                  height: 300,
-                  child: Image.asset(
-                    'images/product.png',
-                    fit: BoxFit.cover,
-                  ),
+               if (cam.image != null)
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                      width: double.maxFinite,
+                      height: 300,
+                      child: Image.network(
+                        cam.image!,
+                        fit: BoxFit.cover,
+                      )),
+                )
+              else
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                      width: double.maxFinite,
+                      height: 300,
+                      child: Image.asset(
+                        'images/product.png',
+                        width: 150,
+                        height: double.maxFinite,
+                        fit: BoxFit.contain,
+                      )),
                 ),
-              ),
               Align(
                 alignment: Alignment.topLeft,
                 child: InkWell(
@@ -68,7 +107,7 @@ class DetailCampaignScreenState extends State<DetailCampaignScreen> {
                         width: double.maxFinite,
                         margin: EdgeInsets.only(top: 20, left: 20, right: 20),
                         child: Text(
-                          'Thung 24 goi mi hao hao tom chua cay',
+                          cam.productName.toString(),
                           style: GoogleFonts.sourceSansPro(
                               fontSize: 30, fontWeight: FontWeight.bold),
                         ),
@@ -77,7 +116,7 @@ class DetailCampaignScreenState extends State<DetailCampaignScreen> {
                         width: double.maxFinite,
                         margin: EdgeInsets.only(top: 10, left: 20),
                         child: Text(
-                          '233,000 đ',
+                          '${camDetail!.discount}  đ',
                           style: GoogleFonts.outfit(
                               color: Color.fromRGBO(65, 109, 212, 1),
                               fontSize: 30,
@@ -88,7 +127,7 @@ class DetailCampaignScreenState extends State<DetailCampaignScreen> {
                         width: double.maxFinite,
                         margin: EdgeInsets.only(left: 20),
                         child: Text(
-                          '330,000 đ',
+                          '${cam.price} đ',
                           style: GoogleFonts.outfit(
                               color: Color.fromRGBO(144, 170, 231, 1),
                               decoration: TextDecoration.lineThrough,
@@ -117,7 +156,7 @@ class DetailCampaignScreenState extends State<DetailCampaignScreen> {
                               margin: EdgeInsets.only(top: 20),
                               width: 170,
                               child: Text(
-                                '30/04/2023 - 15/05/2023',
+                                '${cam.startDate!.day}/${cam.startDate!.month}/${cam.startDate!.year} - ${cam.endDate!.day}/${cam.endDate!.month}/${cam.endDate!.year}',
                                 style: GoogleFonts.outfit(
                                   fontSize: 15,
                                 ),
@@ -145,7 +184,7 @@ class DetailCampaignScreenState extends State<DetailCampaignScreen> {
                               margin: EdgeInsets.only(top: 20),
                               width: 170,
                               child: Text(
-                                '10/06/2023',
+                                '${cam.exp!.day}/${cam.exp!.month}/${cam.exp!.year}',
                                 style: GoogleFonts.outfit(
                                   color: Colors.red,
                                   fontSize: 15,
@@ -174,7 +213,7 @@ class DetailCampaignScreenState extends State<DetailCampaignScreen> {
                               margin: EdgeInsets.only(top: 20),
                               width: 170,
                               child: Text(
-                                '100',
+                                '${camDetail!.minQuantity}',
                                 style: GoogleFonts.outfit(
                                   color: const Color.fromARGB(255, 0, 0, 0),
                                   fontSize: 15,
@@ -203,7 +242,7 @@ class DetailCampaignScreenState extends State<DetailCampaignScreen> {
                               margin: EdgeInsets.only(top: 20),
                               width: 170,
                               child: Text(
-                                '2000',
+                                '${cam.quantity}',
                                 style: GoogleFonts.outfit(
                                   color: const Color.fromARGB(255, 0, 0, 0),
                                   fontSize: 15,
@@ -232,7 +271,7 @@ class DetailCampaignScreenState extends State<DetailCampaignScreen> {
                               margin: EdgeInsets.only(top: 20),
                               width: 170,
                               child: Text(
-                                '100',
+                                'dang tinh',
                                 style: GoogleFonts.outfit(
                                   color: const Color.fromARGB(255, 0, 0, 0),
                                   fontSize: 15,
@@ -253,7 +292,8 @@ class DetailCampaignScreenState extends State<DetailCampaignScreen> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => EditCampaignScreen()));
+                            builder: (context) => EditCampaignScreen(store: store
+                            , cam: cam)));
                   },
                   child: Container(
                     margin: EdgeInsets.only(bottom: 20),

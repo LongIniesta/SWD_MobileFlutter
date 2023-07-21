@@ -92,7 +92,7 @@ class _CustomerOrderState extends State<CustomerOrder> {
               Column(
                 children: [
                   Text(
-                    '${order.storeName}',
+                    'sda',// '${order.storename}',
                     style: GoogleFonts.openSans(
                         fontSize: 16, fontWeight: FontWeight.w700),
                   ),
@@ -109,7 +109,7 @@ class _CustomerOrderState extends State<CustomerOrder> {
                 width: _screenWidth / 30,
               ),
               Text(
-                '${order.unitPrice}',
+                'price',//'${order.unitPrice}',
                 style: GoogleFonts.openSans(),
               ),
             ]),

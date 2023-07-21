@@ -1,15 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../model/campaign.dart';
+import '../model/campaigndetail.dart';
+import '../model/store.dart';
+import 'editcampaign.dart';
+
 class AddCampaignDetailScreen extends StatefulWidget {
-  const AddCampaignDetailScreen({super.key});
+  AddCampaignDetailScreen({super.key, required this.cam, required this.store});
+  Store store;
+  Campaign cam;
 
   @override
-  State<AddCampaignDetailScreen> createState() => _AddCampaignDetailScreenState();
+  State<AddCampaignDetailScreen> createState() =>
+      _AddCampaignDetailScreenState(cam, store);
 }
 
 class _AddCampaignDetailScreenState extends State<AddCampaignDetailScreen> {
-   DateTime dateStart = DateTime.now();
+  DateTime dateStart = DateTime.now();
+  Store store;
+  Campaign cam;
+  String error = '';
+  double discount = 0;
+    @override
+  void initState() {
+    super.initState();
+    dateStart = cam.listCampaignDetail!.last.dateApply!.add(const Duration(days: 1));
+  }
+  int quantity = 0;
+  _AddCampaignDetailScreenState(this.cam, this.store);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +41,11 @@ class _AddCampaignDetailScreenState extends State<AddCampaignDetailScreen> {
                 alignment: Alignment.topLeft,
                 child: InkWell(
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                EditCampaignScreen(store: store, cam: cam)));
                   },
                   child: Container(
                     margin: EdgeInsets.only(top: 50, left: 10),
@@ -115,15 +138,16 @@ class _AddCampaignDetailScreenState extends State<AddCampaignDetailScreen> {
                               color: Colors.white,
                             ),
                             child: TextField(
-                            keyboardType: TextInputType.number,
-                            cursorColor: Colors.black,
-                            decoration: const InputDecoration(
-                              hintText: 'Mức giá',
-                              border: InputBorder.none,
+                              keyboardType: TextInputType.number,
+                              cursorColor: Colors.black,
+                              decoration: const InputDecoration(
+                                hintText: 'Mức giá',
+                                border: InputBorder.none,
+                              ),
+                              onChanged: (value) {
+                                discount = double.parse(value);
+                              },
                             ),
-                            onChanged: (value) {
-                            },
-                          ),
                           ),
                         ),
                         Container(
@@ -145,16 +169,16 @@ class _AddCampaignDetailScreenState extends State<AddCampaignDetailScreen> {
                               color: Colors.white,
                             ),
                             child: TextField(
-                            keyboardType: TextInputType.number,
-                            cursorColor: Colors.black,
-                            decoration: const InputDecoration(
-                              hintText: 'Số lượng',
-                              border: InputBorder.none,
+                              keyboardType: TextInputType.number,
+                              cursorColor: Colors.black,
+                              decoration: const InputDecoration(
+                                hintText: 'Số lượng',
+                                border: InputBorder.none,
+                              ),
+                              onChanged: (value) {
+                                quantity = int.parse(value);
+                              },
                             ),
-                            onChanged: (value) {
-
-                            },
-                          ),
                           ),
                         ),
                       ],
@@ -163,19 +187,34 @@ class _AddCampaignDetailScreenState extends State<AddCampaignDetailScreen> {
                 ),
               ),
               Align(
+                alignment: Alignment.center,
+                child: Text(
+                  error,
+                  style: GoogleFonts.outfit(color: Colors.red),
+                ),
+              ),
+              Align(
                 alignment: Alignment.bottomCenter,
                 child: InkWell(
-                  onTap: (){},
+                  onTap: () {
+                    print('ádsad');
+                    addCamDetail();
+                  },
                   child: Container(
                     margin: EdgeInsets.only(bottom: 10),
                     alignment: Alignment.center,
                     height: 50,
                     width: 300,
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 117, 191, 252),
-                      borderRadius: BorderRadius.circular(10)
+                        color: const Color.fromARGB(255, 117, 191, 252),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Text(
+                      'Thêm',
+                      style: GoogleFonts.outfit(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: const Color.fromARGB(255, 255, 255, 255)),
                     ),
-                    child: Text('Thêm', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 255, 255, 255)),),
                   ),
                 ),
               ),
@@ -185,6 +224,7 @@ class _AddCampaignDetailScreenState extends State<AddCampaignDetailScreen> {
       ),
     );
   }
+
   void _showDatePicker() {
     showDatePicker(
       context: context,
@@ -196,5 +236,49 @@ class _AddCampaignDetailScreenState extends State<AddCampaignDetailScreen> {
         dateStart = value!;
       });
     });
+  }
+
+  void addError(String e) {
+    if (error != '') {
+      error += ' | ';
+    }
+    error += e;
+  }
+
+  void addCamDetail() {
+    error = '';
+    if (quantity <= 0) {
+      addError('Số lượng tối thiểu phải lớn hơn 0');
+    }
+    if (discount >= cam.listCampaignDetail!.last.discount! || discount <= 0) {
+      addError(
+          'Giá giảm đợt tiếp theo phải nhỏ hơn ${cam.listCampaignDetail!.last.discount!} vnđ và lớn hon 0');
+    }
+    if (dateStart.isBefore(cam.listCampaignDetail!.last.dateApply!.add(const Duration(days: 1)))) {
+      addError(
+          'Giá giảm đợt tiếp theo phải sau ngày ${cam.listCampaignDetail!.last.dateApply!.day}/${cam.listCampaignDetail!.last.dateApply!.month}/${cam.listCampaignDetail!.last.dateApply!.year}');
+    }
+    if (dateStart.isAfter(cam.endDate!)) {
+      addError(
+          'Giá giảm đợt tiếp theo phải trước ngày ${cam.endDate!.day}/${cam.endDate!.month}/${cam.endDate!.year}');
+    }
+    if (error == '') {
+      CampaignDetail camadd = CampaignDetail(
+          id: 0,
+          dateApply: dateStart,
+          discount: discount,
+          minQuantity: quantity,
+          percentDiscount: 0);
+          camadd.isSave = false;
+      cam.listCampaignDetail!.add(camadd);
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  EditCampaignScreen(store: store, cam: cam)));
+    }
+     setState(() {
+        error = error;
+      });
   }
 }
