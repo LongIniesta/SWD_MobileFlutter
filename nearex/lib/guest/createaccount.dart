@@ -533,15 +533,16 @@ class CreateAccountState extends State<CreateAccount> {
   }
 
   Future uploadImage() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp();
-    FirebaseAuth mAuth = FirebaseAuth.instance;
+    // WidgetsFlutterBinding.ensureInitialized();
+    // await Firebase.initializeApp();
+    // FirebaseAuth mAuth = FirebaseAuth.instance;
 
-    if (mAuth.currentUser != null) {
-      // do your stuff
-    } else {
-      mAuth.signInAnonymously();
-    }
+    // if (mAuth.currentUser != null) {
+    //   // do your stuff
+    // } else {
+    //  await mAuth.signInAnonymously();
+    // }
+
     final path = 'avts/${pickFile!.name}';
     final file = File(pickFile!.path!);
     final ref = FirebaseStorage.instance.ref().child(path);
@@ -555,7 +556,8 @@ class CreateAccountState extends State<CreateAccount> {
   }
 
   Future<void> createAcc() async {
-    var url = Uri.parse('https://swd-nearex.azurewebsites.net/api/user/create');
+    var url = Uri.parse('https://swd-nearex.azurewebsites.net/api/users/create');
+    
     String googleId = '';
     if (googleUser != null) {
       googleId = googleUser!.id;

@@ -325,11 +325,11 @@ class OtpComfirmState extends State<OtpComfirm> {
     }
     print(otp);
     var url =
-        Uri.parse('https://swd-nearex.azurewebsites.net/api/user/verification');
+        Uri.parse('https://swd-nearex.azurewebsites.net/api/users/verification');
     Map<String, dynamic> body = {
-      "accountSID": "ACa0a4721029b596347de0283f4b3555d0",
-      "authToken": "c4510c96630803358ffdffbf65e9687f",
-      "pathServiceSid": "VAb11a77d8162e6b4df66d046680522c69",
+      "accountSID": "AC8e6696ff8faac7281f34047859c4763c",
+      "authToken": "367d20fdb4452534a0a36fb4ba09816a",
+      "pathServiceSid": "VAac562f462db7c7cead88dc52e5731781",
       "phone": "$phoneNumber",
       "token": "$otp"
     };

@@ -1,8 +1,14 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:nearex/model/store.dart';
+import 'package:nearex/store/homestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../model/product.dart';
+
 
 class LoginStore extends StatefulWidget {
   const LoginStore({super.key});
@@ -211,7 +217,7 @@ class LoginStoreState extends State<LoginStore> {
         inProcessing = true;
       });
       var url =
-          Uri.parse('https://swd-nearex.azurewebsites.net/api/store/login');
+          Uri.parse('https://swd-nearex.azurewebsites.net/api/stores/authentication');
       Map<String, dynamic> body = {
         "phone": "$phoneNumber",
         "password": "$password"
@@ -223,16 +229,30 @@ class LoginStoreState extends State<LoginStore> {
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(body),
         );
-
+        
         if (response.statusCode == 200) {
-         Store store = parseJson(response.body);
-         print(store.address);
+          Store store = parseJson(response.body);
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('Loginwith', 'Store');
+          await prefs.setString('Store', response.body);
+
+          print('token: Bearer ${store.token}');
+
+          // ignore: use_build_context_synchronously
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => StoreScreen(
+                        store: store,
+                      )));
         } else {
+          print(response.statusCode.toString());
           setState(() {
             error = 'Sai sđt hoặc mật khẩu';
           });
         }
       } catch (e) {
+        print('loi call');
         setState(() {
           error = 'Sai sđt hoặc mật khẩu';
         });
@@ -243,4 +263,6 @@ class LoginStoreState extends State<LoginStore> {
       });
     }
   }
+  
+
 }
