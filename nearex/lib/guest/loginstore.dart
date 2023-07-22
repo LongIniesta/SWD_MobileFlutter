@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:nearex/model/store.dart';
 
+import '../store/homestore.dart';
+
 
 
 class LoginStore extends StatefulWidget {
@@ -229,6 +231,11 @@ class LoginStoreState extends State<LoginStore> {
         if (response.statusCode == 200) {
          Store store = parseJson(response.body);
          print(store.address);
+         // ignore: use_build_context_synchronously
+         Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => StoreScreen(store: store,)));
         } else {
           print(response.statusCode.toString());
           setState(() {

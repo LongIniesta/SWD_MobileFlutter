@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:http/http.dart' as http;
+import 'package:nearex/guest/main-screen.dart';
 import 'package:nearex/model/store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -254,29 +255,7 @@ class AccountStoreScreenState extends State<AccountStoreScreen> {
                         ),
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: InkWell(
-                        onTap: () {},
-                        child: Container(
-                          margin: EdgeInsets.only(bottom: 10, top: 10),
-                          alignment: Alignment.center,
-                          height: 50,
-                          width: 300,
-                          decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 117, 191, 252),
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Text(
-                            'Đổi mật khẩu',
-                            style: GoogleFonts.outfit(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color:
-                                    const Color.fromARGB(255, 255, 255, 255)),
-                          ),
-                        ),
-                      ),
-                    ),
+                    SizedBox(height: 200,),
                     Align(
                       alignment: Alignment.center,
                       child: InkWell(
@@ -293,6 +272,31 @@ class AccountStoreScreenState extends State<AccountStoreScreen> {
                               borderRadius: BorderRadius.circular(10)),
                           child: Text(
                             'Cập nhật',
+                            style: GoogleFonts.outfit(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    const Color.fromARGB(255, 255, 255, 255)),
+                          ),
+                        ),
+                      ),
+                    ),
+                     Align(
+                      alignment: Alignment.center,
+                      child: InkWell(
+                        onTap: () {
+                          logout();
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(bottom: 10, top: 10),
+                          alignment: Alignment.center,
+                          height: 50,
+                          width: 300,
+                          decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 202, 0, 0),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Text(
+                            'Đăng xuất',
                             style: GoogleFonts.outfit(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -431,5 +435,15 @@ class AccountStoreScreenState extends State<AccountStoreScreen> {
       print(e.toString());
       return null;
     }
+  }
+
+  Future logout() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.remove('Loginwith');
+          await prefs.remove('Store');
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MainScreen() ));
   }
 }

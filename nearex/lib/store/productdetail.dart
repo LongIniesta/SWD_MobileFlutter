@@ -36,14 +36,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         child: Container(
           child: Stack(
             children: [
-              if (product.image != null)
+             if (product.productImg != null)
                 Align(
                   alignment: Alignment.topCenter,
                   child: Container(
                       width: double.maxFinite,
                       height: 300,
-                      child: Image.memory(
-                        product.image as Uint8List,
+                      child: Image.network(
+                        product.productImg!,
                         fit: BoxFit.cover,
                       )),
                 )
