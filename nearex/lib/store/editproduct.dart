@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,9 +7,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 import 'package:nearex/model/category.dart';
 import 'package:nearex/model/product.dart';
-import 'package:http/http.dart' as http;
 import 'package:nearex/store/productdetail.dart';
 
 import '../model/store.dart';
@@ -34,13 +33,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
   PlatformFile? pickFile;
   Store store;
   List<CategoryProduct> catList;
-List<CategoryProduct>? catListChoose;
+  List<CategoryProduct>? catListChoose;
   String name = '';
   int catId = 0;
   String mota = '';
   String noisanxuat = '';
   String donvitinh = '';
-  double giagoc = 0;
+  int giagoc = 0;
   String linkImg = '';
   String error = '';
   Product product;
@@ -107,7 +106,7 @@ List<CategoryProduct>? catListChoose;
     checkValid();
     if (error == '') {
       if (pickFile != null) {
-       await uploadImage();
+        await uploadImage();
       }
 
       var url = Uri.parse(
@@ -137,7 +136,10 @@ List<CategoryProduct>? catListChoose;
       try {
         http.Response response = await http.put(
           url,
-          headers: {'Content-Type': 'application/json', 'Authorization':'Bearer ${store.token}'},
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ${store.token}'
+          },
           body: jsonEncode(body),
         );
 
@@ -146,14 +148,13 @@ List<CategoryProduct>? catListChoose;
           print('Response body: ${response.body}');
           // ignore: use_build_context_synchronously
           Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ProductDetailScreen(
-                                                        catList: catList,
-                                                        product: product,
-                                                        store: store,
-                                                      )));
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ProductDetailScreen(
+                        catList: catList,
+                        product: product,
+                        store: store,
+                      )));
         } else {
           // Request thất bại, xử lý lỗi
           print('Request failed with status code: ${response.statusCode}');
@@ -215,15 +216,14 @@ List<CategoryProduct>? catListChoose;
                 alignment: Alignment.topLeft,
                 child: InkWell(
                   onTap: () {
-                     Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ProductDetailScreen(
-                                                        catList: catList,
-                                                        product: product,
-                                                        store: store,
-                                                      )));
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProductDetailScreen(
+                                  catList: catList,
+                                  product: product,
+                                  store: store,
+                                )));
                   },
                   child: Container(
                     margin: EdgeInsets.only(top: 50, left: 10),
@@ -263,29 +263,29 @@ List<CategoryProduct>? catListChoose;
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (product.image != null && pickFile == null)
-                      Align(
-                        alignment: Alignment.center,
-                        child: InkWell(
-                          onTap: () async {
-                            selectImage();
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(left: 10, right: 10),
-                            width: double.maxFinite,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
+                          Align(
+                            alignment: Alignment.center,
+                            child: InkWell(
+                              onTap: () async {
+                                selectImage();
+                              },
+                              child: Container(
+                                margin: EdgeInsets.only(left: 10, right: 10),
+                                width: double.maxFinite,
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Image.memory(
+                                  product.image!,
+                                  width: 150,
+                                  height: double.maxFinite,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
                             ),
-                            child: Image.memory(
-                              product.image!,
-                              width: 150,
-                              height: double.maxFinite,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                      )
-                    else if (pickFile == null)
+                          )
+                        else if (pickFile == null)
                           Align(
                             alignment: Alignment.center,
                             child: InkWell(
@@ -521,7 +521,7 @@ List<CategoryProduct>? catListChoose;
                                 border: InputBorder.none,
                               ),
                               onChanged: (value) {
-                                giagoc = double.parse(value);
+                                giagoc = int.parse(value);
                               },
                             ),
                           ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:nearex/customer/customer_main.dart';
 import 'package:nearex/model/customer.dart';
+import 'package:nearex/services/customer_service.dart';
 
 import '../utils/data_storage.dart';
 
@@ -120,8 +121,8 @@ class PasswordLoginState extends State<PasswordToLogin> {
                 height: 40,
                 width: 300,
                 child: ElevatedButton(
-                  onPressed: () async{
-                      login();
+                  onPressed: () async {
+                    login();
                   },
                   style: ElevatedButton.styleFrom(
                       foregroundColor: const Color.fromARGB(255, 255, 255, 255),
@@ -138,7 +139,8 @@ class PasswordLoginState extends State<PasswordToLogin> {
     );
   }
 
-  void saveCustomerState(String customerJson) {
+  void saveCustomerState(String customerJson, Customer customer) {
+    CustomerService.customer = customer as Customer?;
     DataStorage.secureStorage.write(key: "customer", value: customerJson);
   }
 
@@ -165,7 +167,7 @@ class PasswordLoginState extends State<PasswordToLogin> {
         if (response.statusCode == 200) {
           print(response.body.toString());
           Map<String, dynamic> jsonData = json.decode(response.body.toString());
-            Customer customer = Customer(
+          Customer customer = Customer(
               address: jsonData['address'],
               avatar: jsonData['avatar'],
               coordinateString: jsonData['coordinateString'],
@@ -182,15 +184,15 @@ class PasswordLoginState extends State<PasswordToLogin> {
               userName: jsonData['userName'],
               verificationToken: jsonData['verificationToken'],
               verifiedAt: jsonData['verifiedAt'],
-              wishList: null
-            );
-            saveCustomerState(response.body);
-            // ignore: use_build_context_synchronously
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => MainCustomer(customer: customer,)));
-
+              wishList: null);
+          saveCustomerState(response.body, customer);
+          // ignore: use_build_context_synchronously
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MainCustomer(
+                        customer: customer,
+                      )));
         } else {
           // Request thất bại, xử lý lỗi
           print(

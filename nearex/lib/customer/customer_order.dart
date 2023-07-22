@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nearex/models/order.dart';
+import 'package:nearex/services/customer_service.dart';
 import 'package:nearex/services/order_service.dart';
 import 'package:nearex/utils/common_widget.dart';
-import 'package:nearex/utils/data_storage.dart';
 
 class CustomerOrder extends StatefulWidget {
   const CustomerOrder({super.key});
@@ -36,41 +36,51 @@ class _CustomerOrderState extends State<CustomerOrder> {
             ]),
           ),
           body: Container(
+            width: _screenWidth / 5 * 4,
             margin: EdgeInsets.all(_screenWidth / 24),
             child: Expanded(
                 child: TabBarView(children: [
-              SingleChildScrollView(
-                child: FutureBuilder(
-                  future: _getOrders(0),
-                  builder: (context, snapshot) => ListView.builder(
-                      itemBuilder: (context, index) =>
-                          buildOrderView(orders[index])),
+              // SingleChildScrollView(
+              //   child:
+              FutureBuilder(
+                future: _getOrders(3),
+                builder: (context, snapshot) => ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemBuilder: (context, index) =>
+                      buildOrderView(orders[index]),
+                  itemCount: orders.length,
                 ),
               ),
-              SingleChildScrollView(
-                child: FutureBuilder(
-                  future: _getOrders(1),
-                  builder: (context, snapshot) => ListView.builder(
-                      itemBuilder: (context, index) =>
-                          buildOrderView(orders[index])),
+              // ),
+              // SingleChildScrollView(
+              //   child:
+              FutureBuilder(
+                future: _getOrders(1),
+                builder: (context, snapshot) => ListView.builder(
+                  itemBuilder: (context, index) =>
+                      buildOrderView(orders[index]),
+                  itemCount: orders.length,
                 ),
               ),
+              // ),
             ])),
           ),
         ));
   }
 
   Future<List<Order>> _getOrders(int status) async {
-    int customerId =
-        await DataStorage.secureStorage.read(key: 'customerId') as int;
     orders = await OrderService.getOrders(
-        customerId: customerId, page: 1, pageSize: 10, status: status);
+        customerId: CustomerService.customer!.id,
+        page: 1,
+        pageSize: 10,
+        status: status);
     return orders;
   }
 
   Widget buildOrderView(Order order) {
     return InkWell(
       child: Container(
+        height: _screenWidth / 4,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10), color: Colors.white),
         margin: EdgeInsets.all(_screenWidth / 60),
@@ -89,7 +99,7 @@ class _CustomerOrderState extends State<CustomerOrder> {
               Column(
                 children: [
                   Text(
-                    'sda',// '${order.storename}',
+                    'sda', // '${order.storename}',
                     style: GoogleFonts.openSans(
                         fontSize: 16, fontWeight: FontWeight.w700),
                   ),
@@ -106,7 +116,7 @@ class _CustomerOrderState extends State<CustomerOrder> {
                 width: _screenWidth / 30,
               ),
               Text(
-                'price',//'${order.unitPrice}',
+                'price', //'${order.unitPrice}',
                 style: GoogleFonts.openSans(),
               ),
             ]),

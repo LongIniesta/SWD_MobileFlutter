@@ -40,10 +40,10 @@ class _CustomerCampaignDetailsState extends State<CustomerCampaignDetails> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Image.network(_campaign!.product.productImg),
+                  Image.network(_campaign!.product.productImg as String),
                   SizedBox(height: _screenWidth / 30),
                   Text(
-                    _campaign!.product.productName,
+                    _campaign!.product.productName as String,
                     style: GoogleFonts.openSans(
                         fontSize: _screenWidth / 15,
                         fontWeight: FontWeight.bold),
@@ -87,10 +87,25 @@ class _CustomerCampaignDetailsState extends State<CustomerCampaignDetails> {
                     style: GoogleFonts.openSans(),
                   ),
                   SizedBox(height: _screenWidth / 30),
-                  Text('Đơn vị bán: ${_campaign!.product.unit}'),
+                  Row(
+                    children: [
+                      Text('Đơn vị bán: ',
+                          style: GoogleFonts.openSans(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
+                      Text(_campaign!.product.unit as String,
+                          style: GoogleFonts.openSans()),
+                    ],
+                  ),
                   SizedBox(height: _screenWidth / 30),
-                  Text(
-                      'Số lượng ít nhất để đặt mua: ${_campaign!.minQuantity}'),
+                  Row(
+                    children: [
+                      Text('Số lượng ít nhất để đặt mua: ',
+                          style: GoogleFonts.openSans(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
+                      Text('${_campaign!.minQuantity}',
+                          style: GoogleFonts.openSans())
+                    ],
+                  ),
                   SizedBox(height: _screenWidth / 30),
                   Text(
                     'Mô tả sản phẩm:',
@@ -98,7 +113,7 @@ class _CustomerCampaignDetailsState extends State<CustomerCampaignDetails> {
                         fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: _screenWidth / 60),
-                  Text(_campaign!.product.description,
+                  Text(_campaign!.product.description as String,
                       style: GoogleFonts.openSans()),
                   SizedBox(height: _screenWidth / 30),
                   Text('Sản xuất tại:',

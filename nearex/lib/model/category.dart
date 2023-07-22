@@ -10,9 +10,9 @@ class CategoryProduct {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['categoryName'] = this.categoryName;
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['categoryName'] = categoryName;
     return data;
   }
 }

@@ -1,4 +1,4 @@
-import 'package:nearex/models/product.dart';
+import 'package:nearex/model/product.dart';
 
 class Campaign {
   int id;

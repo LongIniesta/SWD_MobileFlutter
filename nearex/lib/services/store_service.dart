@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart';
-import 'package:nearex/models/store.dart';
+import 'package:nearex/model/store.dart';
 
 class StoreService {
   static Future<List<Store>> getStores(int page, int pageSize) async {

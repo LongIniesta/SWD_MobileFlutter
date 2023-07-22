@@ -1,8 +1,10 @@
-import 'dart:convert';
 import 'dart:typed_data';
+
+import 'package:nearex/model/store.dart';
+
 class Product {
   int? id;
-  double? price;
+  int? price;
   String? origin;
   String? productImg;
   String? productName;
@@ -13,7 +15,7 @@ class Product {
   int? storeId;
   int? status;
   Uint8List? image;
-
+  Store? store;
 
   Product(
       {this.id,
@@ -27,8 +29,8 @@ class Product {
       this.categoryId,
       this.storeId,
       this.status,
-      this.image
-      });
+      this.image,
+      this.store});
 
   Product.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -42,8 +44,8 @@ class Product {
     categoryId = json['categoryId'];
     storeId = json['storeId'];
     status = json['status'];
+    store = Store.fromJson(json['store']);
   }
-  
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
@@ -60,6 +62,4 @@ class Product {
     data['status'] = this.status;
     return data;
   }
-  
 }
-

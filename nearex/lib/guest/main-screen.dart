@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -250,7 +251,6 @@ class MainScreenState extends State<MainScreen> {
   }
 
   Future<void> checkPhone(String phone) async {
-    
     setState(() {
       if (phone == '') {
         error = 'Vui lòng nhập số điện thoại';
@@ -281,10 +281,10 @@ class MainScreenState extends State<MainScreen> {
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(body),
         );
-        
+
         if (response.statusCode == 200) {
           print(response.body.toString());
-          if (response.body == 'false') { 
+          if (response.body == 'false') {
             await sendOTP(phone);
           } else {
             saveCustomerState(response.body);
@@ -296,7 +296,8 @@ class MainScreenState extends State<MainScreen> {
           }
         } else {
           // Request thất bại, xử lý lỗi
-          print('Request failed with status code: ${response.statusCode.toString()}');
+          print(
+              'Request failed with status code: ${response.statusCode.toString()}');
         }
       } catch (e) {
         // Xử lý lỗi khi gửi request
@@ -316,7 +317,6 @@ class MainScreenState extends State<MainScreen> {
     final GoogleSignInAuthentication? googleAuth =
         await googleUser?.authentication;
 
-    
     // Create a new credential
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth?.accessToken,

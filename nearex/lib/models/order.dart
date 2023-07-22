@@ -1,31 +1,36 @@
+import 'package:nearex/services/customer_service.dart';
+
 class Order {
   int? id;
   DateTime orderDate;
-  DateTime? shippedDate;
   int status;
   int quantity;
   int campaignId;
+  int? customerId;
+  String? productName;
+  int? unitPrice;
+  String? productImg;
+  String? storeName;
   PaymentRequest? paymentRequest;
   PaymentResponse? paymentResponse;
-  // "productName": "string",
-  // "unitPrice": 0,
-  // "productImg": "string",
-  // "storeName": "string",
   Order(
       {this.id,
       required this.orderDate,
-      this.shippedDate,
       required this.status,
       required this.quantity,
       required this.campaignId,
       this.paymentRequest,
-      this.paymentResponse});
+      this.paymentResponse,
+      this.customerId,
+      this.productImg,
+      this.productName,
+      this.storeName,
+      this.unitPrice});
 
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
         id: json['id'],
-        orderDate: json['orderDate'],
-        shippedDate: json['shippedDate'],
+        orderDate: DateTime.parse(json['orderDate']),
         status: json['status'],
         quantity: json['quantity'],
         campaignId: json['campaignId'],
@@ -34,7 +39,12 @@ class Order {
             : null,
         paymentResponse: json.containsKey('payments')
             ? PaymentResponse.fromJson(json['payments'])
-            : null);
+            : null,
+        customerId: CustomerService.customer?.id,
+        productImg: json['productImg'],
+        productName: json['productName'],
+        storeName: json['storeName'],
+        unitPrice: json['unitPrice']);
   }
 }
 
