@@ -1,14 +1,11 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:nearex/models/customer.dart';
 import 'package:nearex/services/customer_service.dart';
 import 'package:nearex/services/firebase_service.dart';
 import 'package:nearex/utils/common_widget.dart';
-import 'package:nearex/utils/data_storage.dart';
 
 class CustomerProfile extends StatefulWidget {
   const CustomerProfile({super.key});
@@ -26,12 +23,39 @@ class _CustomerProfileState extends State<CustomerProfile> {
   late TextEditingController _emailController;
   late TextEditingController _phoneNumberController;
   late TextEditingController _addressController;
-  late TextEditingController _genderController;
+  late String _selectedGender;
+  late DateTime _selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: customer?.userName);
+    _emailController = TextEditingController(text: customer?.email);
+    _phoneNumberController = TextEditingController(text: customer?.phone);
+    _addressController = TextEditingController(text: customer?.address);
+    String? gender = customer?.gender;
+    if (gender != null) {
+      if (gender == 'Female' || gender == 'Nữ') {
+        _selectedGender = 'Nữ';
+      } else if (gender == 'Male' || gender == 'Nam') {
+        _selectedGender = 'Nam';
+      } else {
+        _selectedGender = 'Không rõ';
+      }
+    } else {
+      _selectedGender = 'Không rõ';
+    }
+    if (customer?.dateOfBirth != null) {
+      _selectedDate = customer?.dateOfBirth as DateTime;
+    } else {
+      _selectedDate = DateTime.now();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     _screenWidth = DimensionValue.getScreenWidth(context);
-    initTextController();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Thông tin cá nhân', style: GoogleFonts.outfit()),
@@ -59,7 +83,6 @@ class _CustomerProfileState extends State<CustomerProfile> {
                   SizedBox(height: _screenWidth / 20),
                   TextFormField(
                     controller: _nameController,
-                    initialValue: customer?.userName,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -80,7 +103,6 @@ class _CustomerProfileState extends State<CustomerProfile> {
                   SizedBox(height: _screenWidth / 20),
                   TextFormField(
                       controller: _emailController,
-                      initialValue: customer?.email,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -147,20 +169,20 @@ class _CustomerProfileState extends State<CustomerProfile> {
                   SizedBox(height: _screenWidth / 20),
                   DropdownButton(
                     items: [
-                      DropdownMenuItem(child: Text('Nam')),
-                      DropdownMenuItem(child: Text('Nữ')),
-                      DropdownMenuItem(child: Text('Không rõ'))
+                      DropdownMenuItem(
+                        child: Text('Nam'),
+                        value: 'Nam',
+                      ),
+                      DropdownMenuItem(
+                        child: Text('Nữ'),
+                        value: 'Nữ',
+                      ),
+                      DropdownMenuItem(
+                        child: Text('Không rõ'),
+                        value: 'Không rõ',
+                      )
                     ],
                     onChanged: (value) {},
-                  ),
-                  TextField(
-                    controller: _genderController,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        hintText: 'Nguyễn Văn A',
-                        hintStyle: GoogleFonts.montserrat(fontSize: 14)),
                   ),
                   ElevatedButton(onPressed: () {}, child: Text('Cập nhật')),
                   ElevatedButton(onPressed: () {}, child: Text('Đổi mật khẩu'))
@@ -173,16 +195,6 @@ class _CustomerProfileState extends State<CustomerProfile> {
     );
   }
 
-  void fetchCustomerProfileData() async {
-    final customerJson = await DataStorage.secureStorage.read(key: 'customer');
-    if (customerJson != null) {
-      setState(() {
-        customer = Customer.fromJson(jsonDecode(customerJson));
-      });
-    }
-  }
-
-  DateTime? _selectedDate = DateTime.now();
   void _onPressedDatePicker() async {
     DateTime? pickedDateTime = await showDatePicker(
         context: context,
@@ -194,15 +206,6 @@ class _CustomerProfileState extends State<CustomerProfile> {
         _selectedDate = pickedDateTime;
       });
     }
-  }
-
-  void initTextController() {
-    fetchCustomerProfileData();
-    _nameController = TextEditingController(text: customer?.userName);
-    _emailController = TextEditingController(text: customer?.email);
-    _phoneNumberController = TextEditingController(text: customer?.phone);
-    _addressController = TextEditingController(text: customer?.address);
-    _genderController = TextEditingController(text: customer?.gender);
   }
 
   void _updateAvatar() async {
@@ -218,12 +221,12 @@ class _CustomerProfileState extends State<CustomerProfile> {
         fileName: 'avatar-9',
         fileDirectory: FirebaseStorageService.imageDirectory);
     CustomerService.updateCustomer(
-        customerId: CustomerService.customer!.id, avatar: filePath);
+        customerId: CustomerService.customer!.id as int, avatar: filePath);
   }
 
   void _update() {
     CustomerService.updateCustomer(
-        customerId: customer!.id,
+        customerId: customer!.id as int,
         email: _emailController.text != customer!.email
             ? _emailController.text
             : null,

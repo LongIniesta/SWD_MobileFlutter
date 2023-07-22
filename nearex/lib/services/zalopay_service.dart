@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-import 'package:nearex/models/zalopay/create_order_response';
+import 'package:nearex/model/zalopay/create_order_response.dart';
 import 'package:nearex/services/customer_service.dart';
 import 'package:uuid/uuid.dart';
 

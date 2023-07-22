@@ -16,12 +16,12 @@ class Payments {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['method'] = this.method;
-    data['status'] = this.status;
-    data['time'] = this.time;
-    data['orderId'] = this.orderId;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['method'] = method;
+    data['status'] = status;
+    data['time'] = time;
+    data['orderId'] = orderId;
     return data;
   }
 }

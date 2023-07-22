@@ -5,10 +5,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nearex/customer/customer_campaign_details.dart';
 import 'package:nearex/customer/customer_notification.dart';
+import 'package:nearex/model/customer.dart';
+import 'package:nearex/model/store.dart';
 import 'package:nearex/models/campaign.dart';
 import 'package:nearex/models/category.dart';
-import 'package:nearex/models/customer.dart';
-import 'package:nearex/models/store.dart';
 import 'package:nearex/services/campaign_service.dart';
 import 'package:nearex/services/category_service.dart';
 import 'package:nearex/services/store_service.dart';
@@ -31,7 +31,6 @@ class _HomeCustomerState extends State<HomeCustomer> {
   double _screenHeight = 0;
   int _selectedCategory = 0;
   int _pageSize = 20;
-  bool _isSearch = false;
   TextEditingController _searchKeyController = TextEditingController();
   late ScrollController _scrollController;
   List<Store> stores = [];
@@ -103,9 +102,10 @@ class _HomeCustomerState extends State<HomeCustomer> {
                                 return null;
                               },
                               onFieldSubmitted: (value) => {
-                                // setState(() {
-                                //   _isSearch = true;
-                                // })
+                                // Navigate.navigate(
+                                //     CustomerCampaignSearch(
+                                //         searchKey: _searchKeyController.text),
+                                //     context)
                               },
                             ),
                           ],
@@ -127,21 +127,20 @@ class _HomeCustomerState extends State<HomeCustomer> {
                 SizedBox(
                   height: _screenWidth / 15,
                 ),
-                if (!_isSearch)
-                  FutureBuilder(
-                    future: fetchDataFirstTimeCall(),
-                    builder: (context, snapshot) => SizedBox(
-                      height: _screenHeight / 22,
-                      child: ListView.separated(
-                        itemBuilder: (context, index) =>
-                            buildCategoryView(categories[index]),
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(width: 12),
-                        itemCount: categories.length,
-                        scrollDirection: Axis.horizontal,
-                      ),
+                FutureBuilder(
+                  future: fetchDataFirstTimeCall(),
+                  builder: (context, snapshot) => SizedBox(
+                    height: _screenHeight / 22,
+                    child: ListView.separated(
+                      itemBuilder: (context, index) =>
+                          buildCategoryView(categories[index]),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(width: 12),
+                      itemCount: categories.length,
+                      scrollDirection: Axis.horizontal,
                     ),
                   ),
+                ),
                 SizedBox(
                   height: _screenWidth / 15,
                 ),
@@ -221,7 +220,7 @@ class _HomeCustomerState extends State<HomeCustomer> {
                 delegate: SliverChildBuilderDelegate(
                     (context, index) => buildCampaignView(campaigns[index])),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, childAspectRatio: 0.5)))
+                    crossAxisCount: 2, childAspectRatio: 0.1)))
       ];
     }
   }
@@ -249,10 +248,8 @@ class _HomeCustomerState extends State<HomeCustomer> {
       child: SizedBox(
         width: _screenWidth / 3,
         child: Column(children: [
-          Image.network(
-              'https://img.freepik.com/free-vector/shop-with-sign-we-are-open_52683-38687.jpg'),
+          if (store.logo != null) Image.network(store.logo.toString()),
           // Image.network(store.logo.toString()),
-          Text(store.storeName.toString()),
         ]),
       ),
       onTap: () {
@@ -265,7 +262,8 @@ class _HomeCustomerState extends State<HomeCustomer> {
   Widget buildCampaignView(Campaign campaign) {
     return InkWell(
       child: Container(
-        height: _screenHeight / 2,
+        // height: _screenHeight / 2,
+        // width: _screenWidth / 2.5,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10), color: Colors.white),
         margin: EdgeInsets.all(_screenWidth / 60),
@@ -273,13 +271,13 @@ class _HomeCustomerState extends State<HomeCustomer> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           SizedBox(
             width: _screenWidth / 3.3,
-            child: Image.network(campaign.product.productImg),
+            child: Image.network(campaign.product.productImg as String),
           ),
           SizedBox(
             height: _screenWidth / 30,
           ),
           Text(
-            campaign.product.productName,
+            campaign.product.productName as String,
             style: GoogleFonts.openSans(
                 color: ColorBackground.blueberry, fontWeight: FontWeight.w700),
           ),

@@ -1,19 +1,15 @@
-import 'dart:ffi';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 import 'package:nearex/model/category.dart';
 import 'package:nearex/model/product.dart';
+import 'package:nearex/model/store.dart';
 import 'package:nearex/store/addnewproduct.dart';
 import 'package:nearex/store/productdetail.dart';
-import 'dart:convert';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:http/http.dart' as http;
-import 'package:dio/dio.dart';
-
-import 'package:nearex/model/store.dart';
 
 class ProductStoreScreen extends StatefulWidget {
   ProductStoreScreen({super.key, required this.store, required this.catList});
@@ -369,7 +365,7 @@ class ProductStoreScreenState extends State<ProductStoreScreen> {
 
         for (var result in results) {
           int id = result['id'];
-          double price = double.parse(result['price'].toString()); 
+          int price = int.parse(result['price'].toString());
           String origin = result['origin'];
           String productImg = result['productImg'];
           String productName = result['productName'];
@@ -419,9 +415,7 @@ class ProductStoreScreenState extends State<ProductStoreScreen> {
     String catID = '';
     if (idCat != 0) {
       catID = '&CategoryId=${idCat}';
-    } else {
-
-    }
+    } else {}
     String searchQuery = '';
     if (search != '') {
       searchQuery = '&ProductName=${search}';
@@ -431,12 +425,12 @@ class ProductStoreScreenState extends State<ProductStoreScreen> {
     try {
       http.Response response = await http.get(url);
 
-      print(response.statusCode.toString() +'Long ne');
+      print(response.statusCode.toString() + 'Long ne');
       print(store.id);
 
       if (response.statusCode == 200) {
         String jsonString = response.body;
-        
+
         // print(response.body
         //     .substring(response.body.length - 500, response.body.length));
         Map<String, dynamic> jsonData = json.decode(response.body.toString());
@@ -447,27 +441,25 @@ class ProductStoreScreenState extends State<ProductStoreScreen> {
         List<dynamic> results = jsonData['results'];
 
         for (var result in results) {
-          
           int id = result['id'];
-          
+
           print(result['price']);
           print('price tren');
-          double price = double.parse(result['price'].toString()); 
+          int price = int.parse(result['price'].toString());
           print('price tren');
-          
-          
+
           String origin = result['origin'];
           String productImg = result['productImg'];
-          
+
           String productName = result['productName'];
           String description = result['description'];
           String unit = result['unit'];
-          
+
           int netWeight = result['netWeight'];
           int categoryId = result['categoryId'];
           int storeId = result['storeId'];
           int? status = result['status'];
-         // Uint8List? image = await getImageFromFirebase(productImg);
+          // Uint8List? image = await getImageFromFirebase(productImg);
           Product product = Product(
               categoryId: categoryId,
               description: description,
@@ -483,7 +475,6 @@ class ProductStoreScreenState extends State<ProductStoreScreen> {
               image: null);
           resultList.add(product);
         }
-        
       } else {
         setState(() {
           isProccessing = false;
@@ -499,7 +490,7 @@ class ProductStoreScreenState extends State<ProductStoreScreen> {
     });
   }
 
-  Future<Uint8List?> getImageFromFirebase(String imageUrl) async { 
+  Future<Uint8List?> getImageFromFirebase(String imageUrl) async {
     try {
       // // Tạo một Firebase Storage instance
       // firebase_storage.FirebaseStorage storage =
